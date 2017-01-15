@@ -1,0 +1,1 @@
+POST /xl-spaceship/protocol/game/new api.controllers.GameApi.register
