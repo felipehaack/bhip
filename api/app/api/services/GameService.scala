@@ -71,7 +71,7 @@ class GameService {
       case 0 => (ship.positions, ship.size)
       case 1 =>
         (ship.positions.map { pos =>
-          ((ship.size._1 - 1) - pos._1, pos._2)
+          ((ship.size._1 - 1) - pos._1, (ship.size._2 - 1) - pos._2)
         }, ship.size)
       case 2 =>
         (ship.positions.map { pos =>
@@ -120,7 +120,7 @@ class GameService {
 
     board.foreach { row =>
 
-      row.foreach(column => print(column))
+      row.foreach(column => print(s"${column} "))
 
       println
     }
