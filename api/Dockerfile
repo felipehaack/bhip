@@ -1,6 +1,6 @@
 FROM java:8-jdk-alpine
 
-RUN apk add --no-cache git bash
+RUN apk add --no-cache git bash curl
 
 ENV SBT_VERSION 0.13.11
 ENV SBT_HOME /usr/local/sbt

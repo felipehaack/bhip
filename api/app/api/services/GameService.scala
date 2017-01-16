@@ -139,7 +139,7 @@ class GameService {
     val shipsPlayer1 = generateShips()
     val boardPlayer1 = createBoard(shipsPlayer1)
 
-    showBoardOnConsole(boardPlayer1)
+    //showBoardOnConsole(boardPlayer1)
 
     val player1 = Player(game.user_id, game.full_name, shipsPlayer1, boardPlayer1)
 
@@ -147,7 +147,7 @@ class GameService {
     val shipsPlayer2 = generateShips()
     val boardPlayer2 = createBoard(shipsPlayer2)
 
-    showBoardOnConsole(boardPlayer2)
+    //showBoardOnConsole(boardPlayer2)
 
     val player2 = Player(PLAYER, FULLNAME, shipsPlayer2, boardPlayer2)
 
