@@ -1,11 +1,12 @@
 package api.controllers
 
+import org.scalatest.{Matchers, WordSpec}
 import play.api.test._
 import play.api.test.Helpers._
 import play.api.libs.json.Json
-import org.scalatestplus.play.{OneAppPerTest, PlaySpec}
+import org.scalatestplus.play.OneAppPerTest
 
-class GameApiTest extends PlaySpec with OneAppPerTest {
+class GameApiTest extends WordSpec with OneAppPerTest with Matchers {
 
   "Game Api" should {
 
@@ -27,7 +28,7 @@ class GameApiTest extends PlaySpec with OneAppPerTest {
 
       val result = await(route(app, fakeRequest).get)
 
-      result.header.status mustBe OK
+      result.header.status shouldBe OK
     }
   }
 
@@ -49,7 +50,7 @@ class GameApiTest extends PlaySpec with OneAppPerTest {
 
     val result = await(route(app, fakeRequest).get)
 
-    result.header.status mustBe BAD_REQUEST
+    result.header.status shouldBe BAD_REQUEST
   }
 
   "and return 400 for miss field on json structure" in {
@@ -69,6 +70,6 @@ class GameApiTest extends PlaySpec with OneAppPerTest {
 
     val result = await(route(app, fakeRequest).get)
 
-    result.header.status mustBe BAD_REQUEST
+    result.header.status shouldBe BAD_REQUEST
   }
 }
