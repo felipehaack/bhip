@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+
+  api:
+    build: ./api
+    command: sbt "project battleship-api" "~run"
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./:/app
+      - ~/.sbt:/root/.sbt
+      - ~/.ivy2:/root/.ivy2
+      - ~/.m2:/root/.m2
+    stdin_open: true
