@@ -9,7 +9,7 @@ services:
       - "9000:9000"
     volumes:
       - ./:/app
-      - ~/.sbt:/root/.sbt
-      - ~/.ivy2:/root/.ivy2
-      - ~/.m2:/root/.m2
+      - .sbt:/root/.sbt
+      - .ivy2:/root/.ivy2
+      - .m2:/root/.m2
     stdin_open: true
