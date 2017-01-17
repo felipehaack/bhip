@@ -5,7 +5,8 @@ import play.api.libs.json.Json
 case class Game(
                  id: Int,
                  name: String,
-                 turn: String,
+                 var turn: String,
+                 var finish: Boolean,
                  player1: Player,
                  player2: Player,
                  spaceshipProtocol: Protocol
@@ -26,6 +27,6 @@ object Game {
                      starting: String
                    )
 
-  implicit val GameCreateFormat = Json.reads[Game.Create]
-  implicit val GameResultFormat = Json.writes[Game.Result]
+  implicit val GameCreateReads = Json.reads[Game.Create]
+  implicit val GameResultWrites = Json.writes[Game.Result]
 }

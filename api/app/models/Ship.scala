@@ -3,7 +3,7 @@ package models
 case class Ship(
                  size: (Int, Int),
                  start: (Int, Int),
-                 positions: List[(Int, Int)]
+                 var positions: List[(Int, Int)]
                )
 
 object Ship {
