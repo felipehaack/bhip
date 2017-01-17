@@ -1,13 +1,14 @@
-package api.controllers
+package api
 
 import javax.inject.Inject
 
-import api.utils.Logging
-import api.models.Error
+import models.Error
 import play.api.i18n._
 import play.api.libs.concurrent.Execution.defaultContext
 import play.api.libs.json._
 import play.api.mvc._
+import utils.Logging
+
 import scala.concurrent.Future
 
 trait Api extends Controller with I18nSupport with JsonApi with ImplicityHelper with Logging {

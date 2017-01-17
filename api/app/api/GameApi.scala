@@ -1,10 +1,10 @@
-package api.controllers
+package api
 
 import javax.inject.{Inject, Singleton}
 
-import api.models.Game
-import api.services.GameService
+import models.Game
 import play.api.mvc.Action
+import services.GameService
 
 @Singleton
 class GameApi @Inject()(matchService: GameService) extends Api {

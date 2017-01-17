@@ -1,8 +1,8 @@
-package api.services
+package services
 
 import javax.inject.Singleton
 
-import api.models.{Game, Player, Ship, Board}
+import models.{Game, Player, Ship, Board}
 
 import scala.util.Random
 

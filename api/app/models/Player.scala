@@ -1,4 +1,4 @@
-package api.models
+package models
 
 case class Player(
                    userId: String,

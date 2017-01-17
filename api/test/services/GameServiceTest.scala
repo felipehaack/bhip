@@ -1,6 +1,6 @@
-package api.services
+package services
 
-import api.models.Ship
+import models.Ship
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
