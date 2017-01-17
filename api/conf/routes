@@ -1,1 +1,7 @@
-POST /xl-spaceship/protocol/game/new api.GameApi.register
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+POST        /xl-spaceship/protocol/game/new                         api.GameApi.register
+PUT         /xl-spaceship/protocol/game/$gameId<[0-9]+>/fire        api.MatchApi.fire(gameId: Int)
+PUT         /xl-spaceship/protocol/game/$gameId<[0-9]+>             api.MatchApi.fired(gameId: Int)

@@ -15,7 +15,7 @@ class GameService {
 
   var matches = List[Game]()
 
-  def createBoard(ships: List[Ship]): Array[Array[Char]] = {
+  private def createBoard(ships: List[Ship]): Array[Array[Char]] = {
 
     val rowsSeq = for {
       i <- 0 until Board.MATRIX
@@ -33,7 +33,7 @@ class GameService {
     rows
   }
 
-  def isOverlap(ships: List[Ship], attempt: Ship): Boolean = {
+  private def isOverlap(ships: List[Ship], attempt: Ship): Boolean = {
 
     ships.length match {
 
@@ -65,7 +65,7 @@ class GameService {
     }
   }
 
-  def rotateShip(ship: Ship): Ship = {
+  private def rotateShip(ship: Ship): Ship = {
 
     val result: (List[(Int, Int)], (Int, Int)) = Random.nextInt(Ship.MAX_POSE) match {
       case 0 => (ship.positions, ship.size)
@@ -86,11 +86,11 @@ class GameService {
     ship.copy(positions = result._1, size = result._2)
   }
 
-  def generateShips(): List[Ship] = {
+  private def generateShips(): List[Ship] = {
 
     var ships = List[Ship]()
 
-    while (ships.length < Ship.All.length) {
+    while (ships.length < 1) {
 
       val rotatedShip = rotateShip(Ship.All(ships.length))
 
@@ -152,7 +152,7 @@ class GameService {
     val player2 = Player(PLAYER, FULLNAME, shipsPlayer2, boardPlayer2)
 
     //Add each player and the game configuration to the Game List that contain all current games
-    val newGame = Game(id, s"${MATCH}-${id}", player1.userId, player1, player2, game.spaceship_protocol)
+    val newGame = Game(id, s"${MATCH}-${id}", player1.userId, false, player1, player2, game.spaceship_protocol)
 
     matches ::= newGame
 
