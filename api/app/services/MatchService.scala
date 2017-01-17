@@ -167,7 +167,7 @@ class MatchService @Inject()(gameService: GameService) {
             val statusBoard = shotBoard(salvo, toDamage, totalShips)
             val statusShips = shotShips(statusBoard, toDamage)
 
-            showOnConsolePlayersBoard(game)
+            //showOnConsolePlayersBoard(game)
 
             getTotalShipsAlive(toDamage) match {
 
