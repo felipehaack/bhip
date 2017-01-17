@@ -90,7 +90,7 @@ class GameService {
 
     var ships = List[Ship]()
 
-    while (ships.length < 1) {
+    while (ships.length < Ship.All.length) {
 
       val rotatedShip = rotateShip(Ship.All(ships.length))
 

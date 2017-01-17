@@ -72,14 +72,14 @@ class MatchService @Inject()(gameService: GameService) {
         val x = getPositionFromAscii(salvo(i)(0))
         val y = getPositionFromAscii(salvo(i)(2))
 
-        println(s"${salvo(i)} ${x} ${y}")
-
         player.board(y)(x) match {
           case c if c == '.' =>
             player.board(y)(x) = '-'
             status ::=(salvo(i), "miss")
+
           case c if c == '-' || c == 'X' =>
             status ::=(salvo(i), "miss")
+
           case '*' =>
             player.board(y)(x) = 'X'
             status ::=(salvo(i), "hit")
@@ -114,21 +114,14 @@ class MatchService @Inject()(gameService: GameService) {
 
           player.ships.foreach { ship =>
 
-            val newPosition = ship.positions.filter { pos =>
+            ship.positions = ship.positions.filter { pos =>
               pos._1 != x || pos._2 != y
             }
 
-            if (newPosition.isEmpty) {
-
-              localStatus ::=(shot, "kill")
-              ship.positions = newPosition
-            } else {
-
-              localStatus ::=(shot, "hit")
-              ship.positions = newPosition
+            ship.positions.isEmpty match {
+              case true => localStatus ::=(shot, "kill")
+              case false => localStatus ::=(shot, "hit")
             }
-
-            println(s"${newPosition.toString()} ${ship.positions} ${x} ${y}")
           }
         case _ => localStatus ::= status(i)
       }
@@ -183,10 +176,12 @@ class MatchService @Inject()(gameService: GameService) {
             val statusBoard = shotBoard(salvo, player, totalShips)
             val statusShips = shotShips(statusBoard, player)
 
-            //showOnConsolePlayersBoard(turn, game)
+            showOnConsolePlayersBoard(turn, game)
 
             getTotalShipsAlive(player) match {
+
               case t if t > 0 => Some(Fire.Result(statusShips, ("player_turn", player.userId)))
+
               case _ =>
 
                 game.finish = true

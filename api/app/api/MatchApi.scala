@@ -44,14 +44,16 @@ class MatchApi @Inject()(matchService: MatchService) extends Api {
 
         case true =>
 
-          val result = matchService.damage(gameId, fire, Turn.Player)
+          matchService.damage(gameId, fire, Turn.Player) match {
 
-          Ok.asJson(result)
+            case Some(r) => Ok.asJson(r)
+            case None => BadRequest
+          }
 
         case false => BadRequest
       }
 
-      case _ => BadRequest
+      case false => BadRequest
     }
   }
 
@@ -63,18 +65,22 @@ class MatchApi @Inject()(matchService: MatchService) extends Api {
 
     result match {
 
-      case true => matchService.verifyPlayerTurn(gameId, Turn.Enemy) match {
+      case true =>
 
-        case true =>
+        matchService.verifyPlayerTurn(gameId, Turn.Enemy) match {
 
-          val result = matchService.damage(gameId, fire, Turn.Enemy)
+          case true =>
 
-          Ok.asJson(result)
+            matchService.damage(gameId, fire, Turn.Enemy) match {
 
-        case false => BadRequest
-      }
+              case Some(r) => Ok.asJson(r)
+              case None => BadRequest
+            }
 
-      case _ => BadRequest
+          case false => BadRequest
+        }
+
+      case false => BadRequest
     }
   }
 }
