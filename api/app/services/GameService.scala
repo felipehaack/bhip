@@ -128,6 +128,43 @@ class GameService {
     println
   }
 
+  def gameBoard(gameId: Int): Option[Game.Progress] = {
+
+    val found = for {
+      i <- matches.indices
+      if matches(i).id == gameId
+    } yield i
+
+    found.length match {
+
+      case 1 =>
+
+        val game = matches(found(0))
+
+        val boardMe = game.me.board.map { row =>
+
+          row.map(a => a.toString).reduce((a, b) => a + b)
+        }
+        val progressMe = Game.ProgressPlayer(game.me.userId, boardMe)
+
+        val boardOpponent = game.opponent.board.map { row =>
+
+          row.map(c => ".").reduce((a, b) => a + b)
+        }
+        val progressOpponent = Game.ProgressPlayer(game.opponent.userId, boardOpponent)
+
+        val progress = Game.Progress(progressMe, progressOpponent, ("player_turn", game.turn))
+
+        game.finish match {
+
+          case true => Some(progress.copy(game = ("won", game.turn)))
+          case false => Some(progress)
+        }
+
+      case _ => None
+    }
+  }
+
   def register(game: Game.Create): Game.Result = {
 
     val id: Int = matches.isEmpty match {
@@ -136,27 +173,27 @@ class GameService {
     }
 
     //Create Ship: rotate and position and generate the board with each ship
-    val shipsPlayer1 = generateShips()
-    val boardPlayer1 = createBoard(shipsPlayer1)
+    val shipsOpponent = generateShips()
+    val boardOpponent = createBoard(shipsOpponent)
 
-    //showBoardOnConsole(boardPlayer1)
+    val opponent = Player(game.user_id, game.full_name, shipsOpponent, boardOpponent)
 
-    val player1 = Player(game.user_id, game.full_name, shipsPlayer1, boardPlayer1)
+    //showBoardOnConsole(boardOpponent)
 
     //Create Ship: rotate and position and generate the board with each ship
-    val shipsPlayer2 = generateShips()
-    val boardPlayer2 = createBoard(shipsPlayer2)
+    val shipsMe = generateShips()
+    val boardMe = createBoard(shipsMe)
 
-    //showBoardOnConsole(boardPlayer2)
+    val me = Player(PLAYER, FULLNAME, shipsMe, boardMe)
 
-    val player2 = Player(PLAYER, FULLNAME, shipsPlayer2, boardPlayer2)
+    //showBoardOnConsole(boardMe)
 
     //Add each player and the game configuration to the Game List that contain all current games
-    val newGame = Game(id, s"${MATCH}-${id}", player1.userId, false, player1, player2, game.spaceship_protocol)
+    val newGame = Game(id, s"$MATCH-$id", opponent.userId, false, me, opponent, game.spaceship_protocol)
 
     matches ::= newGame
 
     //Return the correct data to controller
-    Game.Result(player2.userId, player2.fullName, newGame.name, newGame.turn)
+    Game.Result(opponent.userId, opponent.fullName, newGame.name, newGame.turn)
   }
 }

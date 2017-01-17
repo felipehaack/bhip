@@ -7,12 +7,21 @@ import play.api.mvc.Action
 import services.GameService
 
 @Singleton
-class GameApi @Inject()(matchService: GameService) extends Api {
+class GameApi @Inject()(gameService: GameService) extends Api {
 
   def register = Action(json[Game.Create]) { implicit request =>
 
-    val result = matchService.register(request.body)
+    val result = gameService.register(request.body)
 
     Ok.asJson(result)
+  }
+
+  def progress(gameId: Int) = Action { implicit request =>
+
+    gameService.gameBoard(gameId) match {
+
+      case Some(result) => Ok.asJson(result)
+      case None => NotFound
+    }
   }
 }

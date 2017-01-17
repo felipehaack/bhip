@@ -3,5 +3,8 @@
 # ~~~~
 
 POST        /xl-spaceship/protocol/game/new                         api.GameApi.register
+
 PUT         /xl-spaceship/protocol/game/$gameId<[0-9]+>/fire        api.MatchApi.fire(gameId: Int)
 PUT         /xl-spaceship/protocol/game/$gameId<[0-9]+>             api.MatchApi.fired(gameId: Int)
+
+GET         /xl-spaceship/user/game/$gameId<[0-9]+>                 api.GameApi.progress(gameId: Int)
