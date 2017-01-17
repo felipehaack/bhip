@@ -11,7 +11,7 @@ object Player {
 
   object Turn extends Enumeration {
     type PlayerStatus = Value
-    val Player, Enemy = Value
+    val Me, Opponent = Value
   }
 
 }

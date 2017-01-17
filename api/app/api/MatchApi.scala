@@ -36,15 +36,13 @@ class MatchApi @Inject()(matchService: MatchService) extends Api {
 
     val fire = request.body
 
-    val result = isValidSalvos(fire.salvo)
+    isValidSalvos(fire.salvo) match {
 
-    result match {
-
-      case true => matchService.verifyPlayerTurn(gameId, Turn.Player) match {
+      case true => matchService.verifyPlayerTurn(gameId, Turn.Me) match {
 
         case true =>
 
-          matchService.damage(gameId, fire, Turn.Player) match {
+          matchService.damage(gameId, fire, Turn.Me) match {
 
             case Some(r) => Ok.asJson(r)
             case None => BadRequest
@@ -61,17 +59,15 @@ class MatchApi @Inject()(matchService: MatchService) extends Api {
 
     val fire = request.body
 
-    val result = isValidSalvos(fire.salvo)
-
-    result match {
+    isValidSalvos(fire.salvo) match {
 
       case true =>
 
-        matchService.verifyPlayerTurn(gameId, Turn.Enemy) match {
+        matchService.verifyPlayerTurn(gameId, Turn.Opponent) match {
 
           case true =>
 
-            matchService.damage(gameId, fire, Turn.Enemy) match {
+            matchService.damage(gameId, fire, Turn.Opponent) match {
 
               case Some(r) => Ok.asJson(r)
               case None => BadRequest

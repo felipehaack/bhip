@@ -15,12 +15,12 @@ class MatchService @Inject()(gameService: GameService) {
     val found = for {
       i <- matches.indices
       if matches(i).id == gameId && (turn match {
-        case Turn.Player => matches(i).turn == matches(i).player1.userId
-        case Turn.Enemy => matches(i).turn == matches(i).player2.userId
+        case Turn.Me => matches(i).turn == matches(i).me.userId
+        case Turn.Opponent => matches(i).turn == matches(i).opponent.userId
       })
     } yield i
 
-    found.isEmpty
+    found.nonEmpty
   }
 
   private def getPositionFromAscii(char: Char): Int = {
@@ -50,12 +50,12 @@ class MatchService @Inject()(gameService: GameService) {
     val matches = gameService.matches(index)
 
     turn match {
-      case Turn.Player =>
-        gameService.matches(index).turn = matches.player1.userId
-        (matches.player2, matches.player1)
-      case Turn.Enemy =>
-        gameService.matches(index).turn = matches.player2.userId
-        (matches.player1, matches.player2)
+      case Turn.Me =>
+        gameService.matches(index).turn = matches.opponent.userId
+        (matches.opponent, matches.me)
+      case Turn.Opponent =>
+        gameService.matches(index).turn = matches.me.userId
+        (matches.me, matches.opponent)
     }
   }
 
@@ -132,19 +132,10 @@ class MatchService @Inject()(gameService: GameService) {
     localStatus
   }
 
-  private def showOnConsolePlayersBoard(turn: Turn.Value, game: Game) = {
+  private def showOnConsolePlayersBoard(game: Game) = {
 
-    turn match {
-      case Turn.Enemy => {
-        gameService.showBoardOnConsole(game.player1.board)
-        gameService.showBoardOnConsole(game.player2.board)
-      }
-
-      case Turn.Player => {
-        gameService.showBoardOnConsole(game.player1.board)
-        gameService.showBoardOnConsole(game.player2.board)
-      }
-    }
+    gameService.showBoardOnConsole(game.me.board)
+    gameService.showBoardOnConsole(game.opponent.board)
   }
 
   def damage(gameId: Int, salvos: Fire.Create, turn: Turn.Value): Option[Fire.Result] = {
@@ -169,25 +160,27 @@ class MatchService @Inject()(gameService: GameService) {
 
           case false =>
 
-            val (player, me) = changeTurn(index, turn)
+            val (toDamage, fromDamage) = changeTurn(index, turn)
 
-            val totalShips = getTotalShipsAlive(player)
+            val totalShips = getTotalShipsAlive(toDamage)
 
-            val statusBoard = shotBoard(salvo, player, totalShips)
-            val statusShips = shotShips(statusBoard, player)
+            val statusBoard = shotBoard(salvo, toDamage, totalShips)
+            val statusShips = shotShips(statusBoard, toDamage)
 
-            showOnConsolePlayersBoard(turn, game)
+            showOnConsolePlayersBoard(game)
 
-            getTotalShipsAlive(player) match {
+            getTotalShipsAlive(toDamage) match {
 
-              case t if t > 0 => Some(Fire.Result(statusShips, ("player_turn", player.userId)))
+              case t if t > 0 =>
+
+                Some(Fire.Result(statusShips, ("player_turn", toDamage.userId)))
 
               case _ =>
 
                 game.finish = true
-                game.turn = me.userId
+                game.turn = fromDamage.userId
 
-                Some(Fire.Result(statusShips, ("won", me.userId)))
+                Some(Fire.Result(statusShips, ("won", fromDamage.userId)))
             }
 
           case true => None
