@@ -1,4 +1,4 @@
-package api.models
+package models
 
 case class Ship(
                  size: (Int, Int),

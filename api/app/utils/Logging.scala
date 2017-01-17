@@ -1,4 +1,4 @@
-package api.utils
+package utils
 
 import play.api.Logger
 

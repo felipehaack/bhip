@@ -1,1 +1,1 @@
-POST /xl-spaceship/protocol/game/new api.controllers.GameApi.register
+POST /xl-spaceship/protocol/game/new api.GameApi.register
