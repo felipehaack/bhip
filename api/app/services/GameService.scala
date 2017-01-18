@@ -15,7 +15,7 @@ class GameService {
 
   var matches = List[Game]()
 
-  private def createBoard(ships: List[Ship]): Array[Array[Char]] = {
+  def createBoard(ships: List[Ship]): Array[Array[Char]] = {
 
     val rowsSeq = for {
       i <- 0 until Board.MATRIX
@@ -33,7 +33,7 @@ class GameService {
     rows
   }
 
-  private def isOverlap(ships: List[Ship], attempt: Ship): Boolean = {
+  def isOverlap(ships: List[Ship], attempt: Ship): Boolean = {
 
     ships.length match {
 
@@ -65,7 +65,7 @@ class GameService {
     }
   }
 
-  private def rotateShip(ship: Ship): Ship = {
+  def rotateShip(ship: Ship): Ship = {
 
     val result: (List[(Int, Int)], (Int, Int)) = Random.nextInt(Ship.MAX_POSE) match {
       case 0 => (ship.positions, ship.size)
@@ -86,7 +86,7 @@ class GameService {
     ship.copy(positions = result._1, size = result._2)
   }
 
-  private def generateShips(): List[Ship] = {
+  def generateShips(): List[Ship] = {
 
     var ships = List[Ship]()
 
