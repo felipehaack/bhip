@@ -5,8 +5,12 @@ import javax.inject.{Inject, Singleton}
 import models.{Fire, Game, Player}
 import models.Player._
 
+import scala.util.Random
+
 @Singleton
 class MatchService @Inject()(gameService: GameService) {
+
+  private val HEXADECIMAL = "0123456789ABCDEF"
 
   def verifyPlayerTurn(gameId: Int, turn: Turn.Value): Boolean = {
 
@@ -45,17 +49,15 @@ class MatchService @Inject()(gameService: GameService) {
     i
   }
 
-  private def changeTurn(index: Int, turn: Turn.Value): (Player, Player) = {
-
-    val matches = gameService.matches(index)
+  private def changeTurn(game: Game, turn: Turn.Value): (Player, Player) = {
 
     turn match {
       case Turn.Me =>
-        gameService.matches(index).turn = matches.opponent.userId
-        (matches.opponent, matches.me)
+        game.turn = game.opponent.userId
+        (game.opponent, game.me)
       case Turn.Opponent =>
-        gameService.matches(index).turn = matches.me.userId
-        (matches.me, matches.opponent)
+        game.turn = game.me.userId
+        (game.me, game.opponent)
     }
   }
 
@@ -132,6 +134,25 @@ class MatchService @Inject()(gameService: GameService) {
     localStatus
   }
 
+  private def autoPilotGenerator(game: Game, gameId: Int, turn: Turn.Value) = {
+
+    (game.autopilot, turn) match {
+
+      case (true, Turn.Opponent) =>
+
+        val salvos = for {
+          i <- game.me.ships.indices
+          x = HEXADECIMAL(Random.nextInt(HEXADECIMAL.length))
+          y = HEXADECIMAL(Random.nextInt(HEXADECIMAL.length))
+          s = s"${x}x${y}"
+        } yield s
+
+        damage(gameId, Fire.Create(salvos.toArray), Turn.Me)
+
+      case (_, _) =>
+    }
+  }
+
   private def showOnConsolePlayersBoard(game: Game) = {
 
     gameService.showBoardOnConsole(game.me.board)
@@ -142,25 +163,15 @@ class MatchService @Inject()(gameService: GameService) {
 
     val salvo = salvos.salvo
 
-    val matches = gameService.matches
+    gameService.findGameByGameId(gameId) match {
 
-    val found = for {
-      i <- matches.indices
-      if matches(i).id == gameId
-    } yield i
-
-    found.isEmpty match {
-
-      case false =>
-
-        val index = found(0)
-        val game = matches(index)
+      case Some(game) =>
 
         game.finish match {
 
           case false =>
 
-            val (toDamage, fromDamage) = changeTurn(index, turn)
+            val (toDamage, fromDamage) = changeTurn(game, turn)
 
             val totalShips = getTotalShipsAlive(toDamage)
 
@@ -172,6 +183,8 @@ class MatchService @Inject()(gameService: GameService) {
             getTotalShipsAlive(toDamage) match {
 
               case t if t > 0 =>
+
+                autoPilotGenerator(game, gameId, turn)
 
                 Some(Fire.Result(statusShips, ("player_turn", toDamage.userId)))
 
@@ -186,7 +199,7 @@ class MatchService @Inject()(gameService: GameService) {
           case true => None
         }
 
-      case true => None
+      case _ => None
     }
   }
 }

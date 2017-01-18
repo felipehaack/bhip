@@ -24,4 +24,13 @@ class GameApi @Inject()(gameService: GameService) extends Api {
       case None => NotFound
     }
   }
+
+  def enableAutoPilot(gameId: Int) = Action { implicit request =>
+
+    gameService.enableAutoPilot(gameId) match {
+
+      case true => Ok
+      case false => BadRequest
+    }
+  }
 }

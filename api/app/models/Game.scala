@@ -8,6 +8,7 @@ case class Game(
                  name: String,
                  var turn: String,
                  var finish: Boolean,
+                 var autopilot: Boolean,
                  me: Player,
                  opponent: Player,
                  spaceshipProtocol: Protocol
