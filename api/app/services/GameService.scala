@@ -215,6 +215,6 @@ class GameService {
     matches ::= newGame
 
     //Return the correct data to controller
-    Game.Result(opponent.userId, opponent.fullName, newGame.name, newGame.turn)
+    Game.Result(me.userId, me.fullName, newGame.name, newGame.turn)
   }
 }
