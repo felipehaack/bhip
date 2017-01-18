@@ -8,3 +8,5 @@ PUT         /xl-spaceship/protocol/game/$gameId<[0-9]+>/fire        api.MatchApi
 PUT         /xl-spaceship/protocol/game/$gameId<[0-9]+>             api.MatchApi.fired(gameId: Int)
 
 GET         /xl-spaceship/user/game/$gameId<[0-9]+>                 api.GameApi.progress(gameId: Int)
+
+POST        /xl-spaceship/user/game/$gameId<[0-9]+>/auto            api.GameApi.enableAutoPilot(gameId: Int)

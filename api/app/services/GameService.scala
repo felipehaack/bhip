@@ -116,6 +116,20 @@ class GameService {
     ships
   }
 
+  def findGameByGameId(gameId: Int): Option[Game] = {
+
+    val found = for {
+      i <- matches.indices
+      if matches(i).id == gameId
+    } yield i
+
+    found.length match {
+
+      case 1 => Some(matches(found(0)))
+      case _ => None
+    }
+  }
+
   def showBoardOnConsole(board: Array[Array[Char]]) = {
 
     board.foreach { row =>
@@ -130,16 +144,9 @@ class GameService {
 
   def gameBoard(gameId: Int): Option[Game.Progress] = {
 
-    val found = for {
-      i <- matches.indices
-      if matches(i).id == gameId
-    } yield i
+    findGameByGameId(gameId) match {
 
-    found.length match {
-
-      case 1 =>
-
-        val game = matches(found(0))
+      case Some(game) =>
 
         val boardMe = game.me.board.map { row =>
 
@@ -162,6 +169,20 @@ class GameService {
         }
 
       case _ => None
+    }
+  }
+
+  def enableAutoPilot(gameId: Int): Boolean = {
+
+    findGameByGameId(gameId) match {
+
+      case Some(game) =>
+
+        game.autopilot = true
+
+        true
+
+      case _ => false
     }
   }
 
@@ -189,7 +210,7 @@ class GameService {
     //showBoardOnConsole(boardMe)
 
     //Add each player and the game configuration to the Game List that contain all current games
-    val newGame = Game(id, s"$MATCH-$id", opponent.userId, false, me, opponent, game.spaceship_protocol)
+    val newGame = Game(id, s"$MATCH-$id", opponent.userId, false, false, me, opponent, game.spaceship_protocol)
 
     matches ::= newGame
 
