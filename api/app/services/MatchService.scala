@@ -27,7 +27,7 @@ class MatchService @Inject()(gameService: GameService) {
     found.nonEmpty
   }
 
-  private def getPositionFromAscii(char: Char): Int = {
+  def getPositionFromAscii(char: Char): Int = {
 
     char match {
       case c if c >= 48 && c <= 57 => c - 48
@@ -35,7 +35,7 @@ class MatchService @Inject()(gameService: GameService) {
     }
   }
 
-  private def getTotalShipsAlive(player: Player): Int = {
+  def getTotalShipsAlive(player: Player): Int = {
 
     var i = 0
 
@@ -49,7 +49,7 @@ class MatchService @Inject()(gameService: GameService) {
     i
   }
 
-  private def changeTurn(game: Game, turn: Turn.Value): (Player, Player) = {
+  def changeTurn(game: Game, turn: Turn.Value): (Player, Player) = {
 
     turn match {
       case Turn.Me =>
@@ -61,7 +61,7 @@ class MatchService @Inject()(gameService: GameService) {
     }
   }
 
-  private def shotBoard(salvo: Array[String], player: Player, totalShips: Int): List[(String, String)] = {
+  def shotBoard(salvo: Array[String], player: Player, totalShips: Int): List[(String, String)] = {
 
     var status = List[(String, String)]()
 
@@ -97,7 +97,7 @@ class MatchService @Inject()(gameService: GameService) {
     status
   }
 
-  private def shotShips(status: List[(String, String)], player: Player): List[(String, String)] = {
+  def shotShips(status: List[(String, String)], player: Player): List[(String, String)] = {
 
     var localStatus = List[(String, String)]()
 
@@ -134,7 +134,7 @@ class MatchService @Inject()(gameService: GameService) {
     localStatus
   }
 
-  private def autoPilotGenerator(game: Game, gameId: Int, turn: Turn.Value) = {
+  def autoPilotGenerator(game: Game, gameId: Int, turn: Turn.Value) = {
 
     (game.autopilot, turn) match {
 
@@ -153,7 +153,7 @@ class MatchService @Inject()(gameService: GameService) {
     }
   }
 
-  private def showOnConsolePlayersBoard(game: Game) = {
+  def showOnConsolePlayersBoard(game: Game) = {
 
     gameService.showBoardOnConsole(game.me.board)
     gameService.showBoardOnConsole(game.opponent.board)

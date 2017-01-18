@@ -12,3 +12,14 @@
 3. And go to battleship folder `cd battleship`
 4. Run the following command: ```docker-compose up api```
 5. Once the docker application has been launched successfully, open your browser and go to: ```http://localhost:9000/```
+
+### How to Test
+
+1. Stop the Battleship instance if you have one running
+2. Run the follow command: ```docker-compose run api sbt test```
+
+### How to Postman - Endpoints
+
+1. Open your Chrome Browser and install the [Postman](https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop)
+2. Download the follow endpoints collection file: [Endpoints](https://dl.dropboxusercontent.com/u/20767075/battleship.postman_collection)
+3. Open Postman and import the endpoints collection file
