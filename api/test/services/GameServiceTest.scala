@@ -1,35 +1,40 @@
 package services
 
-import models.Ship
+import models.{Game, Player, Protocol, Ship}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import org.mockito.Mockito._
 
 class GameServiceTest extends PlaySpec with MockitoSugar {
+
+  val player = Player("", "", List(), Array(Array()))
+  val protocol = Protocol("", 9000)
+  val game = Game(1, "", "", false, false, player, player, protocol)
 
   val gameService = new GameService
   val gameServiceMock = mock[GameService]
 
-  "Game Service" should {
+  "create a board" should {
 
-    "create board that returns a array with length more then 1" in {
+    "returns a array with length more then 1" in {
 
       val board = gameService.createBoard(Ship.All.toList)
       board.length must be > 1
     }
   }
 
-  "Game Service" should {
+  "rotate a ship" should {
 
-    "rotate a ship to new or same points position" in {
+    "return a new or same points position" in {
 
       val ship = gameService.rotateShip(Ship.All(0))
       ship.positions.length must be > 0
     }
   }
 
-  "Game Service" should {
+  "detect overlap" should {
 
-    "create a new ship and detect if it was overlap" in {
+    "return false when there's only one ship" in {
 
       val ships = List()
 
@@ -37,11 +42,8 @@ class GameServiceTest extends PlaySpec with MockitoSugar {
 
       isOverlap mustBe false
     }
-  }
 
-  "Game Service" should {
-
-    "create a new ship with 2 ship on list and detect if it was overlap" in {
+    "return false when there's 2 ship, but the seconds ins't overlap" in {
 
       val ships = List(Ship.All(0))
 
@@ -50,6 +52,17 @@ class GameServiceTest extends PlaySpec with MockitoSugar {
       val isOverlap = gameService.isOverlap(ships, attempt)
 
       isOverlap mustBe false
+    }
+
+    "return true when there's 2 ship, but the seconds is overlap" in {
+
+      val ships = List(Ship.All(0))
+
+      val attempt = Ship.All(1).copy(start = (0, 0))
+
+      val isOverlap = gameService.isOverlap(ships, attempt)
+
+      isOverlap mustBe true
     }
   }
 }
