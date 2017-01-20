@@ -1,17 +1,16 @@
 package services
 
-import javax.inject.Singleton
-
+import config.UserConfig
+import scala.util.Random
+import javax.inject.{Inject, Singleton}
 import models.{Game, Player, Ship, Board}
 
-import scala.util.Random
-
 @Singleton
-class GameService {
+class GameService @Inject()(
+                             userConfig: UserConfig
+                           ) {
 
   private val MATCH = "match"
-  private val PLAYER = "player"
-  private val FULLNAME = "Assessment Player"
 
   var matches = List[Game]()
 
@@ -205,7 +204,7 @@ class GameService {
     val shipsMe = generateShips()
     val boardMe = createBoard(shipsMe)
 
-    val me = Player(PLAYER, FULLNAME, shipsMe, boardMe)
+    val me = Player(userConfig.userId, userConfig.fullName, shipsMe, boardMe)
 
     //showBoardOnConsole(boardMe)
 
