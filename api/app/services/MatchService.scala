@@ -10,8 +10,8 @@ import play.api.libs.ws._
 import scala.concurrent.duration._
 import utils.{Protocol, Rules}
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Random
+import scala.concurrent.{Await, ExecutionContext, Future, Promise}
+import scala.util.{Random, Try}
 
 @Singleton
 class MatchService @Inject()(
@@ -22,6 +22,11 @@ class MatchService @Inject()(
 
   private val HEXADECIMAL = "0123456789ABCDEF"
   implicit val CreateFormat = Json.format[Fire.Create]
+
+  private def delay(dur: Deadline) = {
+
+    Try(Await.ready(Promise().future, dur.timeLeft))
+  }
 
   private def verifyPlayerTurn(gameId: String): Boolean = {
 
@@ -181,24 +186,34 @@ class MatchService @Inject()(
     }
   }
 
-  /*private def autoPilotGenerator(game: Game) = {
+  private def autoPilotGenerator(game: Game) = {
 
-    game.autopilot match {
+    (game.autopilot, game.finish) match {
 
-      case true =>
+      case (true, false) =>
 
-        val salvos = for {
-          i <- game.me.ships.indices
-          x = HEXADECIMAL(Random.nextInt(HEXADECIMAL.length))
-          y = HEXADECIMAL(Random.nextInt(HEXADECIMAL.length))
-          s = s"${x}x${y}"
-        } yield s
+        game.turn match {
 
-        fire(gameId, Fire.Create(salvos.toArray))
+          case game.me.userId =>
 
-      case false =>
+            val salvos = for {
+              i <- 0 until game.shots
+              x = HEXADECIMAL(Random.nextInt(HEXADECIMAL.length))
+              y = HEXADECIMAL(Random.nextInt(HEXADECIMAL.length))
+              s = s"${x}x${y}"
+            } yield s
+
+            Future {
+
+              delay(3.seconds.fromNow)
+
+              fire(game.id, Fire.Create(salvos.toArray))
+            }
+        }
+
+      case _ =>
     }
-  }*/
+  }
 
   def fire(gameId: String, salvos: Fire.Create): Future[Option[Fire.Result]] = {
 
@@ -260,6 +275,8 @@ class MatchService @Inject()(
 
         game.me.shots ++= localSalvo
 
+        autoPilotGenerator(game)
+
       case None =>
     }
   }
@@ -308,9 +325,7 @@ class MatchService @Inject()(
                 (Board.WON, game.turn)
             }
 
-            /*turn._1 match {
-              case Board.PLAYER_TURN => autoPilotGenerator(game)
-            }*/
+            autoPilotGenerator(game)
 
             Some(Fire.Result(statusShips, turn))
 
