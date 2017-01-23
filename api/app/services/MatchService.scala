@@ -172,6 +172,7 @@ class MatchService @Inject()(
 
         (localShot._1, localShot._2) match {
           case (shot._1, shot._2) => isReplicate = true
+          case _ =>
         }
 
         i += 1
@@ -233,7 +234,7 @@ class MatchService @Inject()(
 
                 val url = stringAsFire(game.protocol.hostname)(game.protocol.port)(gameId)
 
-                ws.url(url).withRequestTimeout(8000.millis).post(json).map { response =>
+                ws.url(url).withRequestTimeout(8000.millis).put(json).map { response =>
 
                   response.json.validate[Fire.Result].asOpt
                 } recover {
@@ -260,13 +261,16 @@ class MatchService @Inject()(
         game.turn = result.game._2
 
         result.game._1 match {
-          case Board.WON => game.finish = true
+
+          case c if c == Board.WON => game.finish = true
+          case _ =>
         }
 
         verifyResultShots(game.rules) match {
           case 1 => result.salvo.count(_._2 == Board.KILL) match {
             case r if r > 0 => game.shots += 1
           }
+          case _ =>
         }
 
         val localSalvo = verifyReplicateShots(game, result.salvo.toList)
