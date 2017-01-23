@@ -257,8 +257,6 @@ class GameService @Inject()(
     val shipsMe = generateShips()
     val boardMe = createBoard(shipsMe)
 
-    println(userConfig.userId)
-
     val me = Player(userConfig.userId, userConfig.fullName, shipsMe, boardMe, List())
 
     //showBoardOnConsole(boardMe)
