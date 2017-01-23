@@ -2,12 +2,17 @@ package models
 
 object Board {
 
-  val MATRIX = 16
+  val SIZE = 16
 
-  object Ship {
-    val DEFAULT = '.'
-    val MARKER = '*'
-    val MISS = '-'
-  }
+  val WON = "won"
+  val PLAYER_TURN = "player_turn"
 
+  val EMPTY = '.'
+  val KILLED = 'X'
+  val MISSED = '-'
+  val UNCHANGED = '*'
+
+  val KILL = "kill"
+  val MISS = "miss"
+  val HIT = "hit"
 }

@@ -11,5 +11,5 @@ class UserConfig @Inject()(
   lazy val userId = getAsString("user_id")
   lazy val fullName = getAsString("full_name")
   lazy val ip = getAsString("ip")
-  lazy val port = getAsString("port")
+  lazy val port = getAsString("port").toInt
 }

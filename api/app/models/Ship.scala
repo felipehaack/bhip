@@ -55,4 +55,12 @@ object Ship {
     BClass,
     SClass
   )
+
+  object Marker {
+
+    val DEFAULT = '.'
+    val MARKER = '*'
+    val MISS = '-'
+  }
+
 }
