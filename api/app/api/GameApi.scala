@@ -5,9 +5,23 @@ import javax.inject.{Inject, Singleton}
 import models.Game
 import play.api.mvc.Action
 import services.GameService
+import utils.Protocol
 
 @Singleton
-class GameApi @Inject()(gameService: GameService) extends Api {
+class GameApi @Inject()(gameService: GameService) extends Api with Protocol {
+
+  def challenge = Action.async(json[Game.Challenge]) { implicit request =>
+
+    gameService.challenge(request.body) map {
+
+      case Some(result) =>
+
+        gameService.registerChallenge(result, request.body.spaceship_protocol)
+
+        SeeOther(stringAsChallengeSeeOther(result.game_id))
+      case None => BadRequest
+    }
+  }
 
   def register = Action(json[Game.Create]) { implicit request =>
 
@@ -16,7 +30,7 @@ class GameApi @Inject()(gameService: GameService) extends Api {
     Ok.asJson(result)
   }
 
-  def progress(gameId: Int) = Action { implicit request =>
+  def progress(gameId: String) = Action { implicit request =>
 
     gameService.gameBoard(gameId) match {
 
@@ -25,12 +39,17 @@ class GameApi @Inject()(gameService: GameService) extends Api {
     }
   }
 
-  def enableAutoPilot(gameId: Int) = Action { implicit request =>
+  def status = Action { implicit request =>
+
+    Ok.asJson(gameService.status())
+  }
+
+  def enableAutoPilot(gameId: String) = Action { implicit request =>
 
     gameService.enableAutoPilot(gameId) match {
 
       case true => Ok
-      case false => BadRequest
+      case false => NotFound
     }
   }
 }

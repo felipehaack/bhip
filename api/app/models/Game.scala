@@ -1,17 +1,18 @@
 package models
 
+import utils.ImplicitJson._
 import play.api.libs.json.Json
-import utils.ImplicitJsonWrites._
 
 case class Game(
-                 id: Int,
-                 name: String,
+                 id: String,
                  var turn: String,
                  var finish: Boolean,
                  var autopilot: Boolean,
+                 var shots: Int,
+                 rules: String,
                  me: Player,
                  opponent: Player,
-                 spaceshipProtocol: Protocol
+                 protocol: Protocol
                )
 
 object Game {
@@ -19,6 +20,7 @@ object Game {
   case class Create(
                      user_id: String,
                      full_name: String,
+                     rules: String,
                      spaceship_protocol: Protocol
                    )
 
@@ -26,8 +28,20 @@ object Game {
                      user_id: String,
                      full_name: String,
                      game_id: String,
-                     starting: String
+                     starting: String,
+                     rules: String
                    )
+
+  case class Status(
+                     opponent_id: String,
+                     full_name: String,
+                     game_id: String
+                   )
+
+  case class Challenge(
+                        spaceship_protocol: Protocol,
+                        rules: String
+                      )
 
   case class Progress(
                        self: ProgressPlayer,
@@ -40,9 +54,13 @@ object Game {
                              board: Array[String]
                            )
 
-  implicit val GameCreateReads = Json.reads[Game.Create]
-  implicit val GameResultWrites = Json.writes[Game.Result]
+  implicit val GameCreateFormat = Json.format[Create]
+  implicit val GameResultFormat = Json.format[Result]
+
+  implicit val GameChallengeReads = Json.reads[Challenge]
 
   implicit val GameProgressPlayer = Json.writes[ProgressPlayer]
   implicit val GameProgress = Json.writes[Progress]
+
+  implicit val GameStatusWrites = Json.writes[Status]
 }
