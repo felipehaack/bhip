@@ -8,7 +8,7 @@ import play.api.test._
 
 class GameApiTest extends WordSpec with OneAppPerTest with Matchers {
 
-  val game = Json.parse(
+  /*val game = Json.parse(
     """
       |{
       | "user_id": "xebialabs-1",
@@ -119,5 +119,5 @@ class GameApiTest extends WordSpec with OneAppPerTest with Matchers {
 
       gameResultAuto.header.status shouldBe BAD_REQUEST
     }
-  }
+  }*/
 }

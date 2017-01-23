@@ -7,7 +7,7 @@ import org.mockito.Mockito._
 
 class GameServiceTest extends PlaySpec with MockitoSugar {
 
-  val player = Player("", "", List(), Array(Array()))
+  /*val player = Player("", "", List(), Array(Array()))
   val protocol = Protocol("", 9000)
   val game = Game(1, "", "", false, false, player, player, protocol)
 
@@ -64,5 +64,5 @@ class GameServiceTest extends PlaySpec with MockitoSugar {
 
       isOverlap mustBe true
     }
-  }
+  }*/
 }
