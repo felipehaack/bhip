@@ -4,11 +4,11 @@ import play.api.mvc.Action
 import javax.inject.{Inject, Singleton}
 
 import models.Fire
-import utils.Protocol
+import utils.Protocoler
 import services.MatchService
 
 @Singleton
-class MatchApi @Inject()(matchService: MatchService) extends Api with Protocol {
+class MatchApi @Inject()(matchService: MatchService) extends Api with Protocoler {
 
   def fire(gameId: String) = Action.async(json[Fire.Create]) { implicit request =>
 

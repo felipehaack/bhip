@@ -5,10 +5,10 @@ import javax.inject.{Inject, Singleton}
 import models.Game
 import play.api.mvc.Action
 import services.GameService
-import utils.Protocol
+import utils.Protocoler
 
 @Singleton
-class GameApi @Inject()(gameService: GameService) extends Api with Protocol {
+class GameApi @Inject()(gameService: GameService) extends Api with Protocoler {
 
   def challenge = Action.async(json[Game.Challenge]) { implicit request =>
 

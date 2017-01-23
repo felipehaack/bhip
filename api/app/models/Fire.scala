@@ -9,8 +9,6 @@ object Fire {
 
   case class Result(salvo: Seq[(String, String)], game: (String, String))
 
-  implicit val CreateWrites = Json.reads[Create]
-  implicit val ResultWrites = Json.writes[Fire.Result]
-  implicit val ResultReads = Json.reads[Fire.Result]
+  implicit val CreateFormat = Json.format[Fire.Create]
+  implicit val ResultFormat = Json.format[Fire.Result]
 }
-

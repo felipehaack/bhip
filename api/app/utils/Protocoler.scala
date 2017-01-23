@@ -1,6 +1,6 @@
 package utils
 
-trait Protocol {
+trait Protocoler {
 
   val http = "http://"
   val colon = ":"

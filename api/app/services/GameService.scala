@@ -14,14 +14,14 @@ import scala.concurrent.duration._
 import play.api.libs.ws._
 import java.security.MessageDigest
 
-import utils.Rules
+import utils.{Protocoler, Rules}
 
 @Singleton
 class GameService @Inject()(
                              ws: WSClient,
                              userConfig: UserConfig,
                              implicit val executionContext: ExecutionContext
-                           ) extends utils.Protocol with Rules {
+                           ) extends Protocoler with Rules {
 
   var matches = List[Game]()
 
@@ -157,6 +157,38 @@ class GameService @Inject()(
     }
   }
 
+  def status(): List[Game.Status] = {
+
+    val seq = for {
+      i <- matches.indices
+      id = matches(i).id
+      user = matches(i).opponent.userId
+      name = matches(i).opponent.fullName
+    } yield {
+      Game.Status(
+        opponent_id = user,
+        full_name = name,
+        game_id = id
+      )
+    }
+
+    seq.toList
+  }
+
+  def enableAutoPilot(gameId: String): Boolean = {
+
+    findGameByGameId(gameId) match {
+
+      case Some(game) =>
+
+        game.autopilot = true
+
+        true
+
+      case None => false
+    }
+  }
+
   def gameBoard(gameId: String): Option[Game.Progress] = {
 
     findGameByGameId(gameId) match {
@@ -195,20 +227,6 @@ class GameService @Inject()(
     }
   }
 
-  def enableAutoPilot(gameId: String): Boolean = {
-
-    findGameByGameId(gameId) match {
-
-      case Some(game) =>
-
-        game.autopilot = true
-
-        true
-
-      case None => false
-    }
-  }
-
   def challenge(challenge: Game.Challenge): Future[Option[Game.Result]] = {
 
     findShotsByRules(challenge.rules) match {
@@ -231,24 +249,6 @@ class GameService @Inject()(
 
       case None => Future(None)
     }
-  }
-
-  def status(): List[Game.Status] = {
-
-    val seq = for {
-      i <- matches.indices
-      id = matches(i).id
-      user = matches(i).opponent.userId
-      name = matches(i).opponent.fullName
-    } yield {
-      Game.Status(
-        opponent_id = user,
-        full_name = name,
-        game_id = id
-      )
-    }
-
-    seq.toList
   }
 
   def register(game: Game.Create): Game.Result = {

@@ -3,12 +3,11 @@ package services
 import javax.inject.{Inject, Singleton}
 
 import models.{Board, Fire, Game, Player}
-import models.Player._
 import play.api.libs.json.Json
 import play.api.libs.ws._
 
 import scala.concurrent.duration._
-import utils.{Protocol, Rules}
+import utils.{Protocoler, Rules}
 
 import scala.concurrent.{Await, ExecutionContext, Future, Promise}
 import scala.util.{Random, Try}
@@ -18,10 +17,9 @@ class MatchService @Inject()(
                               ws: WSClient,
                               gameService: GameService,
                               implicit val context: ExecutionContext
-                            ) extends Protocol with Rules {
+                            ) extends Protocoler with Rules {
 
   private val HEXADECIMAL = "0123456789ABCDEF"
-  implicit val CreateFormat = Json.format[Fire.Create]
 
   private def delay(dur: Deadline) = {
 
