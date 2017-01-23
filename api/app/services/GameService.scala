@@ -267,9 +267,9 @@ class GameService @Inject()(
     //showBoardOnConsole(boardOpponent)
 
     //Add each player and the game configuration to the Game List that contain all current games
-    val turn = Random.nextInt(1) match {
-      case 0 => me.userId
-      case 1 => opponent.userId
+    val turn = Random.nextInt(20) match {
+      case r if r % 2 == 0 => me.userId
+      case r if r % 2 == 1 => opponent.userId
     }
 
     val shots = findShotsByRules(game.rules)
