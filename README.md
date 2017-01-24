@@ -8,10 +8,11 @@
 ### How to Run
 
 1. Open the terminal
-2. Clone the project: ```git clone https://felipehaack@bitbucket.org/felipehaack/battleship.git```
-3. And go to battleship folder `cd battleship`
-4. Run the following command: ```docker-compose up api```
-5. Once the docker application has been launched successfully, open your browser and go to: ```http://localhost:9000/```
+2. Clone the project: ```git clone https://felipehaack@bitbucket.org/felipehaack/bship.git```
+3. And go to battleship folder ```cd bship```
+4. Before, set the appropriate user id, full name, ip and port by editing the file ```nano api/conf/application.conf```
+5. Run the following command: ```docker-compose up api```
+6. Once the docker application has been launched successfully, open your browser and go to: ```http://localhost:9000/```
 
 ### How to Test
 
