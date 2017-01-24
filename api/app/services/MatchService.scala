@@ -282,7 +282,7 @@ class MatchService @Inject()(
 
         verifyResultShots(game.rules) match {
           case 1 => result.salvo.count(_._2 == Board.KILL) match {
-            case r if r > 0 => game.shots += 1
+            case r if r > 0 => game.shots += r
           }
           case _ =>
         }
