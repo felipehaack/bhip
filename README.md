@@ -1,4 +1,4 @@
-## Battleship - Coding Test
+## Bship
 
 ### How to Setup
 
