@@ -181,9 +181,9 @@ class MatchService @Inject()(
 
   private def autoPilotGenerator(game: Game) = {
 
-    (game.autopilot, game.finish) match {
+    game.autopilot match {
 
-      case (true, false) =>
+      case true =>
 
         game.turn match {
 
@@ -196,23 +196,35 @@ class MatchService @Inject()(
               s = s"${x}x${y}"
             } yield s
 
-            println(salvos)
-
             Future {
-
-              println("autopilot -> 1")
 
               delay(3.seconds.fromNow)
 
-              println("autopilot -> 2")
+              fire(game.id, Fire.Create(salvos.toArray)) map {
 
-              fire(game.id, Fire.Create(salvos.toArray))
+                case Some(result) => fireResult(game.id, result)
+                case _ =>
+              }
             }
 
           case _ =>
         }
 
       case _ =>
+    }
+  }
+
+  def returnFuture: Future[Option[Boolean]] = {
+
+    Future(None)
+  }
+
+  def verifyAutoPilot(gameId: String): Boolean = {
+
+    gameService.findGameByGameId(gameId) match {
+
+      case Some(game) => game.autopilot
+      case _ => false
     }
   }
 
@@ -236,10 +248,6 @@ class MatchService @Inject()(
 
                 val url = stringAsFire(game.protocol.hostname)(game.protocol.port)(gameId)
 
-                println("fire -> 1")
-                salvos.salvo.foreach(f => println(s"${f} "))
-                println(url)
-
                 ws.url(url).withRequestTimeout(8000.millis).put(json).map { response =>
 
                   response.json.validate[Fire.Result].asOpt
@@ -258,7 +266,7 @@ class MatchService @Inject()(
     }
   }
 
-  def fireResult(gameId: String, result: Fire.Result) = {
+  def fireResult(gameId: String, result: Fire.Result): Any = {
 
     gameService.findGameByGameId(gameId) match {
 
