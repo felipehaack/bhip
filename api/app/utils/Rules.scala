@@ -56,10 +56,19 @@ trait Rules {
     }
   }
 
-  def isDesperationRules(rules: String): Boolean = {
+  def isDesperation(rules: String): Boolean = {
 
     rules match {
       case r if r.indexOf(Rule.DESPERATION.toString) > -1 => true
+      case _ => false
+    }
+  }
+
+  def isSuperChargerOrStandard(rules: String): Boolean = {
+
+    rules match {
+      case r if r.indexOf(Rule.SUPER_CHARGER.toString) > -1 => true
+      case r if r.indexOf(Rule.STANDARD.toString) > -1 => true
       case _ => false
     }
   }

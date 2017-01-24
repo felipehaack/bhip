@@ -35,7 +35,9 @@ object Game {
   case class Status(
                      opponent_id: String,
                      full_name: String,
-                     game_id: String
+                     game_id: String,
+                     finished: Boolean,
+                     autopilot: Boolean
                    )
 
   case class Challenge(

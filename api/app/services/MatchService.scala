@@ -74,7 +74,7 @@ class MatchService @Inject()(
     }
   }
 
-  private def shotBoard(salvo: Array[String], player: Player, totalShips: Int): List[(String, String)] = {
+  private def shotBoard(salvo: Array[String], player: Player): List[(String, String)] = {
 
     var status = List[(String, String)]()
 
@@ -82,26 +82,20 @@ class MatchService @Inject()(
 
     while (i < salvo.length) {
 
-      if (i < totalShips) {
+      val x = findPositionFromAscii(salvo(i)(0))
+      val y = findPositionFromAscii(salvo(i)(2))
 
-        val x = findPositionFromAscii(salvo(i)(0))
-        val y = findPositionFromAscii(salvo(i)(2))
+      player.board(y)(x) match {
+        case c if c == Board.EMPTY =>
+          player.board(y)(x) = Board.MISSED
+          status ::=(salvo(i), Board.MISS)
 
-        player.board(y)(x) match {
-          case c if c == Board.EMPTY =>
-            player.board(y)(x) = Board.MISSED
-            status ::=(salvo(i), Board.MISS)
+        case c if c == Board.MISSED || c == Board.KILLED =>
+          status ::=(salvo(i), Board.MISS)
 
-          case c if c == Board.MISSED || c == Board.KILLED =>
-            status ::=(salvo(i), Board.MISS)
-
-          case Board.UNCHANGED =>
-            player.board(y)(x) = Board.KILLED
-            status ::=(salvo(i), Board.HIT)
-        }
-      } else {
-
-        status ::=(salvo(i), Board.MISS)
+        case Board.UNCHANGED =>
+          player.board(y)(x) = Board.KILLED
+          status ::=(salvo(i), Board.HIT)
       }
 
       i += 1
@@ -202,12 +196,20 @@ class MatchService @Inject()(
               s = s"${x}x${y}"
             } yield s
 
+            println(salvos)
+
             Future {
+
+              println("autopilot -> 1")
 
               delay(3.seconds.fromNow)
 
+              println("autopilot -> 2")
+
               fire(game.id, Fire.Create(salvos.toArray))
             }
+
+          case _ =>
         }
 
       case _ =>
@@ -233,6 +235,10 @@ class MatchService @Inject()(
                 val json = Json.toJson(salvos)
 
                 val url = stringAsFire(game.protocol.hostname)(game.protocol.port)(gameId)
+
+                println("fire -> 1")
+                salvos.salvo.foreach(f => println(s"${f} "))
+                println(url)
 
                 ws.url(url).withRequestTimeout(8000.millis).put(json).map { response =>
 
@@ -297,7 +303,7 @@ class MatchService @Inject()(
 
             val totalShips = findTotalShipsAlive(game.me)
 
-            val statusBoard = shotBoard(salvo, game.me, totalShips)
+            val statusBoard = shotBoard(salvo, game.me)
             val statusShips = shotShips(statusBoard, game.me)
 
             game.turn = game.me.userId
@@ -306,17 +312,24 @@ class MatchService @Inject()(
 
             val turn = findTotalShipsAlive(game.me) match {
 
-              case t if t > 0 =>
+              case total if total > 0 =>
 
-                isDesperationRules(game.rules) match {
+                isDesperation(game.rules) match {
 
-                  case v if v && totalShips != t =>
+                  case v if v && totalShips != total =>
 
                     game.turn = game.opponent.userId
 
                     (Board.PLAYER_TURN, game.turn)
 
-                  case _ => (Board.PLAYER_TURN, game.turn)
+                  case _ =>
+
+                    isSuperChargerOrStandard(game.rules) match {
+                      case true => game.shots = total
+                      case _ =>
+                    }
+
+                    (Board.PLAYER_TURN, game.turn)
                 }
 
               case _ =>
