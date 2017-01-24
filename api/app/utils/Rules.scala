@@ -48,14 +48,6 @@ trait Rules {
     }
   }
 
-  def verifyResultShots(rules: String): Int = {
-
-    rules match {
-      case r if r.indexOf(Rule.DESPERATION.toString) > -1 => 1
-      case _ => 0
-    }
-  }
-
   def isDesperation(rules: String): Boolean = {
 
     rules match {

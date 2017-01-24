@@ -280,10 +280,8 @@ class MatchService @Inject()(
           case _ =>
         }
 
-        verifyResultShots(game.rules) match {
-          case 1 => result.salvo.count(_._2 == Board.KILL) match {
-            case r if r > 0 => game.shots += r
-          }
+        isDesperation(game.rules) match {
+          case true => game.shots += result.salvo.count(_._2 == Board.KILL)
           case _ =>
         }
 
