@@ -14,5 +14,5 @@ POST        /xl-spaceship/user/game/$gameId<[0-9a-zA-Z]+>/auto        api.GameAp
 
 PUT         /xl-spaceship/user/game/$gameId<[0-9a-zA-Z]+>/fire        api.MatchApi.fire(gameId: String)
 
-GET         /xl-spaceshin/user/games                                  api.GameApi.status
+GET         /xl-spaceship/user/games                                  api.GameApi.status
 GET         /xl-spaceship/user/game/$gameId<[0-9a-zA-Z]+>             api.GameApi.progress(gameId: String)
