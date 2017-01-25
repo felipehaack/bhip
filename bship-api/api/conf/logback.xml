@@ -9,17 +9,27 @@
         </encoder>
     </appender>
 
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>api/logs/application.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%date [%level][gw-app] %logger - %message%n%xException%n</pattern>
+        </encoder>
+    </appender>
+
     <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="STDOUT"/>
     </appender>
 
-    <logger name="play" level="INFO"/>
-    <logger name="application" level="DEBUG"/>
-    <logger name="api" level="DEBUG"/>
-    <logger name="battleship" level="DEBUG"/>
+    <logger name="play" level="TRACE"/>
+    <logger name="application" level="INFO"/>
+    <logger name="api" level="INFO"/>
+    <logger name="battleship" level="INFO"/>
+
 
     <root level="WARN">
-        <appender-ref ref="ASYNCSTDOUT"/>
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
     </root>
 
 </configuration>
