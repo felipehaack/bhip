@@ -214,20 +214,6 @@ class MatchService @Inject()(
     }
   }
 
-  def returnFuture: Future[Option[Boolean]] = {
-
-    Future(None)
-  }
-
-  def verifyAutoPilot(gameId: String): Boolean = {
-
-    gameService.findGameByGameId(gameId) match {
-
-      case Some(game) => game.autopilot
-      case _ => false
-    }
-  }
-
   def fire(gameId: String, salvos: Fire.Create): Future[Option[Fire.Result]] = {
 
     (isValidSalvos(salvos.salvo), verifyPlayerTurn(gameId)) match {
