@@ -196,8 +196,6 @@ class MatchService @Inject()(
               s = s"${x}x${y}"
             } yield s
 
-            println(salvos)
-
             Future {
 
               delay(3.seconds.fromNow)
