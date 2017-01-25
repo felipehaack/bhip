@@ -1,123 +1,154 @@
 package api
 
-import org.scalatest.{Matchers, WordSpec}
-import org.scalatestplus.play.OneAppPerTest
-import play.api.libs.json.Json
-import play.api.test.Helpers._
+import common.ApiSpec
 import play.api.test._
+import play.api.test.Helpers._
+import play.api.libs.json.Json
+import models.{Game, Protocol}
+import org.scalatestplus.play.{OneAppPerTest, PlaySpec}
 
-class GameApiTest extends WordSpec with OneAppPerTest with Matchers {
+class GameApiTest extends PlaySpec with ApiSpec with OneAppPerTest {
 
-  /*val game = Json.parse(
-    """
-      |{
-      | "user_id": "xebialabs-1",
-      | "full_name": "XebiaLabs Opponent",
-      | "spaceship_protocol": {
-      |     "hostname": "127.0.0.1",
-      |     "port": 9001
-      |   }
-      | }
-    """.stripMargin)
+  val protocol = Protocol("192.168.1.2", 9000)
+  val game = Game.Create("xebialabs", "xebialabs full", "standard", protocol)
+  val gameResult = Game.Result("someone", "someone full", "somehash", "someone", "standard")
 
-  "create new game" should {
+  "try to create a new game by Protocol API call" should {
 
-    "return 200 after create a game" in {
+    "return 200 after create a new game" in {
 
-      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(game)
+      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(game))
 
-      val result = await(route(app, fakeRequest).get)
+      val result = route(app, fakeRequest).get
 
-      result.header.status shouldBe OK
+      status(result) mustBe 200
+
+      result.contentAs[Game.Result].rules mustBe "standard"
     }
-  }
 
-  "try to create a new game" should {
+    "return 400 when some fields are has invalid data" in {
 
-    "and return 400 for bad json request" in {
+      val localGame = game.copy(rules = "noexist")
+      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(localGame))
 
-      val parse = Json.parse(
+      val result = route(app, fakeRequest).get
+
+      result.isCompleted mustBe false
+    }
+
+    "return 400 when some fields are missed on json" in {
+
+      val json =
         """
-          |{
-          | "user_id": "xebialabs-1",
-          | "full_name": "XebiaLabs Opponent",
-          | "spaceship_protocol": {
-          |     "hostname": "127.0.0.1",
-          |     "port": "9001"
-          |   }
-          | }
-        """.
-          stripMargin)
+          {
+          | "user_id": "xebialabs",
+          |	"rules": "standard",
+          |	"spaceship_protocol": {
+          |		"hostname": "127.0.0.1",
+          |		"port": 8000
+          |	}
+          }
+        """.stripMargin
 
-      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(parse)
+      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(json))
 
-      val result = await(route(app, fakeRequest).get)
+      val result = route(app, fakeRequest).get
 
-      result.header.status shouldBe BAD_REQUEST
-    }
-
-    "and return 400 for missed value on json" in {
-
-      val parse = Json.parse(
-        """
-          |{
-          | "user_id": "xebialabs-1",
-          | "spaceship_protocol": {
-          |     "hostname": "127.0.0.1",
-          |     "port": 9001
-          |   }
-          | }
-        """.stripMargin)
-
-      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(parse)
-
-      val result = await(route(app, fakeRequest).get)
-
-      result.header.status shouldBe BAD_REQUEST
+      result.isCompleted mustBe false
     }
   }
 
-  "get game progress" should {
+  "try to get the progress status of the game" should {
 
-    "return 200 when there's a game running" in {
+    "return 200 when try to get an existing game status from game id" in {
 
-      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(game)
-      await(route(app, fakeRequest).get)
+      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(game))
 
-      val fakeProgressRequest = FakeRequest(GET, "/xl-spaceship/user/game/1")
-      val progressResult = await(route(app, fakeProgressRequest).get)
+      val result = route(app, fakeRequest).get
 
-      progressResult.header.status shouldBe OK
+      status(result) mustBe 200
+
+      val gameResult = result.contentAs[Game.Result]
+
+      gameResult.rules mustBe game.rules
+
+      val fakeRequestAux = FakeRequest(GET, s"/xl-spaceship/user/game/${gameResult.game_id}")
+
+      val resultAux = route(app, fakeRequestAux).get
+
+      status(resultAux) mustBe 200
+
+      val gameProgress = resultAux.contentAs[Game.Progress]
+
+      gameProgress.opponent.user_id mustBe game.user_id
     }
 
-    "return 404 when there's no game running for specify ID" in {
+    "return 404 when try to get the game status from game id that doesn't exists" in {
 
-      val fakeProgressRequest = FakeRequest(GET, "/xl-spaceship/user/game/")
-      val progressResult = await(route(app, fakeProgressRequest).get)
+      val fakeRequest = FakeRequest(GET, s"/xl-spaceship/user/game/${gameResult.game_id}")
 
-      progressResult.header.status shouldBe NOT_FOUND
+      val result = route(app, fakeRequest).get
+
+      status(result) mustEqual 404
     }
   }
 
-  "enable auto pilot" should {
+  "try to get all game status" should {
 
-    "return 200 when there's a game running" in {
+    "return 200 with at least 2 game in progress" in {
 
-      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(game)
-      await(route(app, fakeRequest).get)
+      await(route(app, FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(game))).get)
+      await(route(app, FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(game))).get)
 
-      val fakeRequestAuto = FakeRequest(POST, "/xl-spaceship/user/game/1/auto").withJsonBody(game)
-      val gameResultAuto = await(route(app, fakeRequestAuto).get)
+      val fakeRequest = FakeRequest(GET, "/xl-spaceship/user/games")
 
-      gameResultAuto.header.status shouldBe OK
+      val result = route(app, fakeRequest).get
+
+      val gameStatus = result.contentAs[List[Game.Status]]
+
+      gameStatus.length must be > 1
     }
 
-    "return 400 when there's no game running on specify ID" in {
+    "return 200 with no games in progress" in {
 
-      val fakeRequestAuto = FakeRequest(POST, "/xl-spaceship/user/game/10/auto").withJsonBody(game)
-      val gameResultAuto = await(route(app, fakeRequestAuto).get)
+      val fakeRequest = FakeRequest(GET, "/xl-spaceship/user/games")
 
-      gameResultAuto.header.status shouldBe BAD_REQUEST
+      val result = route(app, fakeRequest).get
+
+      val gameStatus = result.contentAs[List[Game.Status]]
+
+      gameStatus.length mustEqual 0
     }
-  }*/
+  }
+
+  "try to enable the autopilot feature" should {
+
+    "return 200 when enable auto pilot with a existing game id" in {
+
+      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(game))
+
+      val result = route(app, fakeRequest).get
+
+      status(result) mustBe 200
+
+      val gameResult = result.contentAs[Game.Result]
+
+      gameResult.rules mustBe game.rules
+
+      val fakeRequestPilot = FakeRequest(POST, s"/xl-spaceship/user/game/${gameResult.game_id}/auto")
+
+      val resultPilot = route(app, fakeRequestPilot).get
+
+      status(resultPilot) mustBe 200
+    }
+
+    "return 404 when try to enable with not found game id" in {
+
+      val fakeRequestPilot = FakeRequest(POST, s"/xl-spaceship/user/game/${gameResult.game_id}/auto")
+
+      val resultPilot = route(app, fakeRequestPilot).get
+
+      status(resultPilot) mustBe 404
+    }
+  }
 }

@@ -62,7 +62,10 @@ object Game {
   implicit val GameChallengeReads = Json.reads[Challenge]
 
   implicit val GameProgressPlayer = Json.writes[ProgressPlayer]
+  implicit val GameProgressPlayerReads = Json.reads[ProgressPlayer]
   implicit val GameProgress = Json.writes[Progress]
+  implicit val GameProgressReads = Json.reads[Progress]
 
   implicit val GameStatusWrites = Json.writes[Status]
+  implicit val GameStatusReads = Json.reads[Status]
 }
