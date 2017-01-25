@@ -12,25 +12,15 @@ class MatchApi @Inject()(matchService: MatchService) extends Api with Protocoler
 
   def fire(gameId: String) = Action.async(json[Fire.Create]) { implicit request =>
 
-    matchService.verifyAutoPilot(gameId) match {
+    matchService.fire(gameId, request.body) map {
 
-      case false =>
+      case Some(result) =>
 
-        matchService.fire(gameId, request.body) map {
+        matchService.fireResult(gameId, result)
 
-          case Some(result) =>
+        Ok.asJson(result)
 
-            matchService.fireResult(gameId, result)
-
-            Ok.asJson(result)
-
-          case None => BadRequest
-        }
-
-      case true => matchService.returnFuture map {
-
-        case _ => BadRequest
-      }
+      case None => BadRequest
     }
   }
 
