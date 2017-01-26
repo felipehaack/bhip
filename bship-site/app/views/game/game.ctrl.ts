@@ -1,33 +1,31 @@
 module App {
-	'use strict';
+    'use strict';
 
-	export class BasicFormController {
-		static id = "basicFormController";
+    export class BasicFormController {
+        static id = "basicFormController";
 
-		private _logger: ILog;
-			
-		/*@ngInject*/
-		constructor(			
-			private loggerFactory: ILoggerFactory,
-			private config: Config
-			) {
+        private _logger: ILog;
 
-			this._logger = loggerFactory(BasicFormController.id);
-			this._logger.info("ctor", "init", { hello: "yo", config: config });
-			this._logger.debug("ctor", "init debug", { hello: "yo", config: config });
-		}
+        /*@ngInject*/
+        constructor(private loggerFactory: ILoggerFactory,
+                    private config: Config) {
 
-		title = "Basic Form";
-		alias: string;
+            this._logger = loggerFactory(BasicFormController.id);
+            this._logger.info("ctor", "init", {hello: "yo", config: config});
+            this._logger.debug("ctor", "init debug", {hello: "yo", config: config});
+        }
 
-		save() {
-			this._logger.info("save", "yay!", { alias: this.alias });
-			//this.userInfo.alias = this.alias;
-		}
+        title = "Basic Form";
+        alias: string;
 
-	}
+        save() {
+            this._logger.info("save", "yay!", {alias: this.alias});
+            //this.userInfo.alias = this.alias;
+        }
 
-	angular.module(Module)
-		.controller(BasicFormController.id, BasicFormController);
+    }
+
+    angular.module(Module)
+        .controller(BasicFormController.id, BasicFormController);
 
 }

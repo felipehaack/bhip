@@ -1,27 +1,16 @@
 module App {
-  'use strict';
 
-  export class HomeController {
+    'use strict';
 
-    static id = "homeController"
+    export class HomeController {
 
-    private title = "Battleship Heroes";
-    private language: string;
+        static id = "homeController"
 
-    /*@ngInject*/
-    constructor(private $state,
-                private translationService: ITranslationService,
-                private loggerFactory: ILoggerFactory,
-                private config: Config) {
+        /*@ngInject*/
+        constructor(private $state) {
 
-      this.title = "eu guys"
-      this.language = "blabla"
+        }
     }
 
-    bla(){
-      this.$state.go("game")
-    }
-  }
-
-  angular.module(Module).controller(HomeController.id, HomeController);
+    angular.module(Module).controller(HomeController.id, HomeController);
 }

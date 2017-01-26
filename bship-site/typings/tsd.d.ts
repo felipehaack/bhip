@@ -2,5 +2,3 @@
 /// <reference path="jquery/jquery.d.ts" />
 /// <reference path="angular-ui-router/angular-ui-router.d.ts" />
 /// <reference path="lodash/lodash.d.ts" />
-
-/// <reference path="../bower_components/ng-command/api/ng-command.d.ts" />

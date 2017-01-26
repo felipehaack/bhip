@@ -1,43 +1,26 @@
 module App {
 
-  var app = angular.module(Module);
+    let app = angular.module(Module);
 
-  export class Config {
-    static id = "config";
+    export class Config {
 
-    constructor() {
+        static id: string = "config";
 
+        protected name: string = "battleship";
+        protected version: string = "1.0";
+
+        constructor() {
+
+        }
     }
 
-    name = "battleship";
-    version = "1.0";
-    events = {
-      myEvent: "example",
-      uiRouter: {
-        $stateChangeError: "$stateChangeError",
-        $stateChangeStart: "$stateChangeStart",
-        $stateChangeSuccess: "$stateChangeSuccess",
-        $stateNotFound: "$stateNotFound"
-      }
-    }
-    /*remoteUri = new RemoteUriConfig();*/
-  }
+    app.constant(Config.id, new Config());
 
-  /*export class RemoteUriConfig {
+    app.config(($logProvider: ng.ILogProvider, $locationProvider: ng.ILocationProvider) => {
 
-   base = "/api/";
-   account = {
-   login: `${this.base}/login`
-   }
-   }
-   */
-  app.constant(Config.id, new Config());
+        if ($logProvider.debugEnabled) {
 
-  app.config(($logProvider: ng.ILogProvider,
-              $locationProvider: ng.ILocationProvider) => {
-
-    if ($logProvider.debugEnabled) {
-      $logProvider.debugEnabled(true);
-    }
-  });
+            $logProvider.debugEnabled(true);
+        }
+    });
 }

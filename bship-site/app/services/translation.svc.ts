@@ -1,27 +1,28 @@
 module App {
 
-	export interface ITranslationService {
-		language: string;
-	}
+    export interface ITranslationService {
+        language: string;
+    }
 
+    class TranslationService implements ITranslationService {
 
-	class TranslationService implements ITranslationService {
-		static id = "translationService";
+        static id = "translationService";
 
-		constructor() {
+        private _language: string;
 
-		}
+        constructor() {
 
-		private _language: string;
-		get language() {
-			return this._language;
-		}
-		set language(language: string) {
-			this._language = language;
-		}
+        }
 
-	}
+        get language() {
+            return this._language;
+        }
 
-	angular.module(App.Module)
-		.service(TranslationService.id, TranslationService);
+        set language(language: string) {
+            this._language = language;
+        }
+
+    }
+
+    angular.module(App.Module).service(TranslationService.id, TranslationService);
 }
