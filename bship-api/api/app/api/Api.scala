@@ -27,12 +27,16 @@ trait JsonApi extends ImplicityHelper {
 
   implicit class ResultAsJson(status: Status)(implicit requestHeader: RequestHeader) {
 
-    def asJson[T: Writes](o: T): Result = o match {
+    def asJson[T: Writes](o: T): Result = {
+      val r = o match {
 
-      case true => NoContent
-      case false | None => NotFound
-      case () => status
-      case _ => status(Json.toJson(o))
+        case true => NoContent
+        case false | None => NotFound
+        case () => status
+        case _ => status(Json.toJson(o))
+      }
+
+      r.withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
     }
 
     def asJson[T: Writes](f: Future[T]): Future[Result] = f.map(asJson(_))

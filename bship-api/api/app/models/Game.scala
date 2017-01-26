@@ -37,7 +37,8 @@ object Game {
                      full_name: String,
                      game_id: String,
                      finished: Boolean,
-                     autopilot: Boolean
+                     autopilot: Boolean,
+                     shots: Int
                    )
 
   case class Challenge(
