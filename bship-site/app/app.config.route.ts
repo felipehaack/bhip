@@ -1,12 +1,8 @@
 module App {
 
     angular.module(Module)
-        .config(
-            ["$stateProvider",
-                "$urlRouterProvider",
-                "$locationProvider",
-                ($locationProvider: ng.ILocationProvider,
-                 $stateProvider: angular.ui.IStateProvider) => {
+        .config(["$locationProvider", "$stateProvider",
+                ($locationProvider: ng.ILocationProvider, $stateProvider: angular.ui.IStateProvider) => {
 
                     $stateProvider.state("home", {
                         url: "/",
@@ -21,8 +17,6 @@ module App {
                         controller: BasicFormController.id,
                         controllerAs: "vm"
                     });
-
-                    //$urlRouterProvider.otherwise("");
 
                     $locationProvider.html5Mode(true)
                 }

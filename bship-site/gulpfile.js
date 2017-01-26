@@ -69,7 +69,7 @@ gulp.task("compile:typescript", function () {
 		module: "amd",
 		target: "ES5",
 		declarationFiles: false,
-		emitError: false,
+		/*emitError: false,*/
 		emitDecoratorMetadata: true
 	}));
 		
@@ -133,7 +133,7 @@ gulp.task("serve", ["build:prod"], function (done) {
 
 	browserSync({
 		open: false,
-		port: 9000,
+		port: 8000,
 		server: {
 			baseDir: [paths.dist],
 			middleware: function (req, res, next) {

@@ -7,7 +7,8 @@ module App {
         static id = "homeController"
 
         /*@ngInject*/
-        constructor(private $state) {
+        constructor(private $state,
+                    private userApiService: UserApiService) {
 
         }
     }
