@@ -1,0 +1,90 @@
+<md-dialog aria-label="challenge a player \o/">
+
+    <form name="form" ng-cloak>
+
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Challenge a Player \o/</h2>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <md-input-container class="md-block" flex-gt-sm>
+
+                    <label class="capitalize">ip address</label>
+
+                    <input name="ipAddress"
+                           placeholder="000.000.000"
+                           ng-model="vm.challenge.address"
+                           ng-pattern="/^[0-9]{2,3}\.[0-9]{2,3}\.[0-9]{2,3}$/"
+                           md-maxlength="11"
+                           required>
+
+                    <div ng-messages="form.ipAddress.$error" role="alert" multiple>
+                        <div ng-message="required" class="my-message">You must supply an ip address format.</div>
+                        <div ng-message="pattern" class="my-message">That doesn't look like a valid ip address.</div>
+                        <div ng-message="md-maxlength" class="my-message">Don't use the long version silly...</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm>
+
+                    <label class="capitalize">port</label>
+
+                    <input name="port"
+                           placeholder="9000"
+                           ng-model="vm.challenge.port"
+                           ng-pattern="/^[0-9]{4}$/"
+                           md-maxlength="4"
+                           required>
+
+                    <div ng-messages="form.port.$error" role="alert" multiple>
+                        <div ng-message="required" class="my-message">You must supply a port.</div>
+                        <div ng-message="pattern" class="my-message">That doesn't looks like a valid port.</div>
+                        <div ng-message="md-maxlength" class="my-message">Don't use the long version silly...</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm>
+
+                    <label class="capitalize">rules</label>
+
+                    <md-select name="rules"
+                               ng-model="vm.challenge.rules"
+                               required>
+                        <md-option value="standard">standard</md-option>
+                        <md-option value="x-shot">x-shot</md-option>
+                        <md-option value="super-charge">super-charge</md-option>
+                        <md-option value="desperation">desperation</md-option>
+                    </md-select>
+                </md-input-container>
+
+                <md-input-container class="md-block mgn-t-35" flex-gt-sm
+                                    ng-show="vm.challenge.rules === 'x-shot'">
+
+                    <label class="capitalize">max shots</label>
+
+                    <input name="maxShots"
+                           placeholder="5"
+                           ng-model="vm.challenge.maxShots"
+                           ng-pattern="/^([1-9]|[1-1][0-0])$/"
+                           md-maxlength="2"
+                           ng-required="vm.challenge.rules === 'x-shot'">
+
+                    <div ng-messages="form.maxShots.$error" role="alert" multiple>
+                        <div ng-message="required" class="my-message">You must supply a shots between 1 and 10.</div>
+                        <div ng-message="pattern" class="my-message">That doesn't looks like a valid shots.</div>
+                        <div ng-message="md-maxlength" class="my-message">Don't use the long version silly...</div>
+                    </div>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <md-button ng-click="letsChallenge(vm.challenge)" ng-disabled="form.$invalid || form.$pristine">challenge!
+            </md-button>
+            <md-button ng-click="cancel()">not yet :(</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

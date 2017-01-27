@@ -1,0 +1,47 @@
+<section id="popupContainer" layout="row" class="max-height capitalize noselect" flex>
+
+    <md-sidenav
+            class="md-sidenav-left"
+            md-component-id="left"
+            md-is-locked-open="false"
+            md-whiteframe="4">
+
+        <md-toolbar class="md-theme-indigo">
+            <h1 class="md-toolbar-tools">games in progress</h1>
+        </md-toolbar>
+
+        <md-content layout-padding>
+
+            <md-card md-theme="{{ showDarkTheme ? 'dark-purple' : 'default' }}" md-theme-watch md-ink-ripple>
+
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline title">jessica costa</span>
+                        <span class="md-subhead">
+                            <span>player turn:</span>
+                            <span>felipe</span>
+                        </span>
+                    </md-card-title-text>
+                </md-card-title>
+
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button>enable auto pilot</md-button>
+                </md-card-actions>
+            </md-card>
+        </md-content>
+    </md-sidenav>
+
+    <md-content flex layout-padding>
+
+        <div layout="column" layout-align="top center">
+
+            <md-button class="menu-fab" aria-label="menu-fab" ng-click="vm.openMenu()">
+                <md-icon md-svg-src="imgs/ic_menu_black_24px.svg"></md-icon>
+            </md-button>
+        </div>
+
+        <md-button class="md-fab challenge-fab" aria-label="challenge-fab" ng-click="vm.challengeDialog($event)">
+            <md-icon md-svg-src="imgs/ic_add_white_24px.svg"></md-icon>
+        </md-button>
+    </md-content>
+</section>
