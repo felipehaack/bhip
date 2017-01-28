@@ -1,12 +1,12 @@
 module App {
 
     let app = angular.module(Module, [
-        "ngAnimate",
-        "ngCookies",
-        "ngTouch",
-        "ngSanitize",
-        "ui.router",
-        "ui.bootstrap"
+        'ngAnimate',
+        'ngCookies',
+        'ngSanitize',
+        'ui.router',
+        'ngMaterial',
+        'ngMessages'
     ]);
 
     app.run(($rootScope: ng.IRootScopeService,

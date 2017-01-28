@@ -16,7 +16,7 @@ module App {
 
     app.constant(Config.id, new Config());
 
-    app.config(($logProvider: ng.ILogProvider, $locationProvider: ng.ILocationProvider) => {
+    app.config(($logProvider: ng.ILogProvider) => {
 
         if ($logProvider.debugEnabled) {
 

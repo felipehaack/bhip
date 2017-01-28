@@ -1,49 +1,67 @@
 @import "../globals/all";
 
 body {
-	background: $primary-bg-color!important;
-	color: $primary-color;
-	margin-bottom: 60px;
-	
-	.bg {
-		width: 100%;
-		height: 100vh;
-		background: linear-gradient(
-			rgba(220, 220, 220, 0.7),
-			rgba(175, 175, 175, 0.5)
-			),
-			no-repeat center center url("/imgs/heroes_of_the_storm-game-wallpaper-art-high_resolution-mr__jack-1920x1200.jpg");
-		background-size: cover;
-			}
-	
-	.main.container {
-		padding: 60px 15px 0;
-	}
+
+  width: 100%;
+  height: 100%;
+
+  background: $primary-bg-color;
 }
 
-.container {
-	.text-muted{
-		margin: 20px 0;
-	}
+.noselect {
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-footer {
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	height: 60px;
-	background: $secondary-bg-color;
-	
-	> .container{
-		padding: 0 15px;
-	}
+md-card[md-ink-ripple] {
+
+  position: relative;
+
+  cursor: pointer;
 }
 
-.nav{
-	.user-profile {
-		img {
-			width: 30px;
-			height:30px;
-		}
-	}
+.capitalize {
+
+  text-transform: capitalize;
+}
+
+.mgn-t-35 {
+
+  margin-top: 35px;
+}
+
+.ng-scope {
+
+  height: 100%;
+}
+
+.max-height {
+
+  height: 100%;
+}
+
+.title {
+
+  font-size: 19px;
+}
+
+.menu-fab {
+
+  position: absolute;
+
+  left: 10px;
+  top: 10px;
+}
+
+.challenge-fab {
+
+  position: fixed;
+
+  right: 10px;
+  bottom: 10px;
 }
