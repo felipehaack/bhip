@@ -16,12 +16,15 @@ module App {
     }
 
     export interface ILoggerService {
-
         log(logType: LogType, message: string, data?: any);
+    }
 
+    export interface ILoggerFactory {
+        (sourceId: string): ILog;
     }
 
     export class LoggerService implements ILoggerService {
+
         static id = "loggerService";
 
         /*@ngInject*/
@@ -33,23 +36,18 @@ module App {
             switch (logType) {
 
                 case LogType.Debug:
-                    //console.debug(message, data);
                     this.$log.debug(message, data);
                     break;
                 case LogType.Info:
-                    //console.info(message, data);
                     this.$log.info(message, data);
                     break;
                 case LogType.Error:
-                    //console.error(message, data);
                     this.$log.error(message, data);
                     break;
                 case LogType.Warning:
-                    //console.warn(message, data);
                     this.$log.warn(message, data);
                     break;
                 default:
-                    //console.log(message, data);
                     this.$log.log(message, data);
                     break;
             }
@@ -80,23 +78,17 @@ module App {
         }
 
         private _log(sourceId: string, source: string, logType: LogType, message?: string, data?: any) {
-            var msg = `[${sourceId}::${source}] ${message}`;
+            let msg = `[${sourceId}::${source}] ${message}`;
             this.loggerService.log(logType, msg, data);
         }
 
     }
 
-    export interface ILoggerFactory {
-        (sourceId: string): ILog;
-    }
 
-    angular.module(App.Module)
-        .service(LoggerService.id, LoggerService)
+    angular.module(App.Module).service(LoggerService.id, LoggerService)
         .factory("loggerFactory", (loggerService) => {
-
             return (sourceId): ILog => {
                 return new Logger(sourceId, loggerService);
             };
-
         });
 }

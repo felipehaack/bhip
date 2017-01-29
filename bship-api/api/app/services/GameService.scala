@@ -167,6 +167,7 @@ class GameService @Inject()(
       finished = matches(i).finish
       autopilot = matches(i).autopilot
       shots = matches(i).shots
+      turn = matches(i).turn
     } yield {
       Game.Status(
         opponent_id = user,
@@ -174,7 +175,8 @@ class GameService @Inject()(
         game_id = id,
         finished = finished,
         autopilot = autopilot,
-        shots = shots
+        shots = shots,
+        turn = turn
       )
     }
 

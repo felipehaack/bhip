@@ -11,13 +11,6 @@ module App {
                         controllerAs: "vm"
                     });
 
-                    $stateProvider.state("game", {
-                        url: "game",
-                        templateUrl: "views/game/game.html",
-                        controller: BasicFormController.id,
-                        controllerAs: "vm"
-                    });
-
                     $locationProvider.html5Mode(true)
                 }
             ]
