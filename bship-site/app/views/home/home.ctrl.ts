@@ -38,8 +38,13 @@ module App {
 
         bindTimeMethods() {
 
-            this.$interval(this.findNewGames, 10 * 1000)
-            this.$interval(this.findCurrentGame, 5 * 1000)
+            this.$interval(function () {
+                this.findNewGames()
+            }.bind(this), 10 * 1000)
+
+            this.$interval(function () {
+                this.findCurrentGame()
+            }.bind(this), 5 * 1000)
         }
 
         findNewGames() {
