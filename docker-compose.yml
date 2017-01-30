@@ -4,14 +4,14 @@ services:
 
   api:
     build: ./bship-api/api
-    command: sbt "project battleship-api" "run 8010"
+    command: sbt "project battleship-api" "~run 8010"
     ports:
       - "8010:8010"
     volumes:
-      - ./:/app
-      - .sbt:/root/.sbt
-      - .ivy2:/root/.ivy2
-      - .m2:/root/.m2
+      - /bship-api/./:/app
+      - /bship-api/.sbt:/root/.sbt
+      - /bship-api/.ivy2:/root/.ivy2
+      - /bship-api/.m2:/root/.m2
     environment:
       - USER_ID=my user name
       - FULL_NAME=my full name
