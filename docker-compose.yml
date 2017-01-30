@@ -8,10 +8,10 @@ services:
     ports:
       - "8010:8010"
     volumes:
-      - ./:/app
-      - .sbt:/root/.sbt
-      - .ivy2:/root/.ivy2
-      - .m2:/root/.m2
+      - ./bship-api/api:/app
+      - ./bship-api/api/.sbt:/root/.sbt
+      - ./bship-api/api/.ivy2:/root/.ivy2
+      - ./bship-api/api/.m2:/root/.m2
     environment:
       - USER_ID=my user name
       - FULL_NAME=my full name
