@@ -38,15 +38,8 @@ module App {
 
         bindTimeMethods() {
 
-            this.currentGamesTimer = this.$interval(function () {
-
-                this.findNewGames()
-            }.bind(this), 10 * 1000)
-
-            this.currentGameTimer = this.$interval(function () {
-
-                this.findCurrentGame()
-            }.bind(this), 5 * 1000)
+            this.$interval(this.findNewGames, 10 * 1000)
+            this.$interval(this.findCurrentGame, 5 * 1000)
         }
 
         findNewGames() {
@@ -57,7 +50,7 @@ module App {
 
                 if (this.currentGame) {
 
-                    this.currentGame = this.allGames.filter(game => game.game_id === this.currentGame.game_id)
+                    this.currentGame = this.allGames.filter(game => game.game_id === this.currentGame.game_id)[0]
                 }
             })
         }
