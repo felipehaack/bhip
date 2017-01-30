@@ -16,7 +16,6 @@
 7. Run the following command: ```docker-compose up web```
 8. Once the docker application has been launched successfully, open your browser and go to: ```http://localhost:8020```
 
-
 ### How to Test
 
 1. Stop the Battleship instance if you have one running
