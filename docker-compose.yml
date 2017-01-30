@@ -12,6 +12,11 @@ services:
       - ./bship-api/.sbt:/root/.sbt
       - ./bship-api/.ivy2:/root/.ivy2
       - ./bship-api/.m2:/root/.m2
+    environment:
+      - USER_ID=my user name
+      - FULL_NAME=my full name
+      - IP_ADDRESS=127.0.0.1
+      - IP_PORT=8010
     stdin_open: true
 
   web:
