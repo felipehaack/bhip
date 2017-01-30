@@ -25,6 +25,11 @@ md-card[md-ink-ripple] {
   cursor: pointer;
 }
 
+md-toast {
+
+  height: auto !important;
+}
+
 .capitalize {
 
   text-transform: capitalize;
@@ -52,7 +57,9 @@ md-card[md-ink-ripple] {
 
 .menu-fab {
 
-  position: absolute;
+  position: fixed;
+
+  z-index: 1;
 
   left: 10px;
   top: 10px;
@@ -62,6 +69,120 @@ md-card[md-ink-ripple] {
 
   position: fixed;
 
+  z-index: 1;
+
   right: 10px;
   bottom: 10px;
+}
+
+.status-fab {
+
+  position: fixed;
+
+  z-index: 1;
+
+  left: 10px;
+  bottom: 10px;
+}
+
+.shots-fab {
+
+  position: fixed;
+
+  z-index: 1;
+
+  left: 70px;
+  bottom: 10px;
+
+  line-height: 0 !important;
+}
+
+.send-fab {
+
+  position: fixed;
+
+  z-index: 1;
+
+  left: 130px;
+  bottom: 10px;
+}
+
+.status-fab-wait {
+
+  background-color: $fab-match-wait !important;
+}
+
+.status-fab-go {
+
+  background-color: $fab-match-go !important;
+}
+
+.status-fab-shot {
+
+  background-color: $fab-match-shot !important;
+}
+
+.box-board {
+
+  width: 24px;
+  height: 24px;
+
+  margin: 1px;
+}
+
+.box-me {
+
+  background-color: #47586C;
+}
+
+.box-ship {
+
+  background-color: #000000;
+}
+
+.box-missed {
+
+  background-color: #e4b320;
+}
+
+.box-ship-destroy {
+
+  background-color: #984844;
+}
+
+.box-selected {
+
+  -webkit-transform: scale(0.7, 0.7);
+  transform: scale(0.7, 0.7);
+}
+
+.board-space {
+
+  margin-top: 45px;
+}
+
+@media (max-width: 965px) {
+
+  .box-board {
+
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 770px) {
+
+  .box-board {
+
+    width: 18px;
+    height: 18px;
+  }
+
+  .board-orientation {
+
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+  }
 }

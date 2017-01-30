@@ -1,4 +1,4 @@
-<section id="popupContainer" layout="row" class="max-height capitalize noselect" flex>
+<section id="popupContainer" layout="row" class="max-height noselect" flex>
 
     <md-sidenav
             class="md-sidenav-left"
@@ -6,41 +6,113 @@
             md-is-locked-open="false"
             md-whiteframe="4">
 
-        <md-toolbar class="md-theme-indigo">
+        <md-toolbar class="md-theme-indigo capitalize">
             <h1 class="md-toolbar-tools">games in progress</h1>
         </md-toolbar>
 
         <md-content layout-padding>
 
-            <md-card md-theme="{{ showDarkTheme ? 'dark-purple' : 'default' }}" md-theme-watch md-ink-ripple>
+            <ng-repeat ng-repeat="game in vm.allGames track by $index">
 
-                <md-card-title>
-                    <md-card-title-text>
-                        <span class="md-headline title">jessica costa</span>
-                        <span class="md-subhead">
-                            <span>player turn:</span>
-                            <span>felipe</span>
-                        </span>
-                    </md-card-title-text>
-                </md-card-title>
+                <md-card md-theme="{{ showDarkTheme ? 'dark-purple' : 'default' }}" md-theme-watch md-ink-ripple>
 
-                <md-card-actions layout="row" layout-align="end center">
-                    <md-button>enable auto pilot</md-button>
-                </md-card-actions>
-            </md-card>
+                    <md-card-title ng-click="vm.setCurrentGame(game)">
+                        <md-card-title-text class="capitalize">
+                            <span class="md-subhead">
+                                <span>game status:</span>
+                                <span>{{game.finished === true ? 'finished' : 'in progress'}}</span>
+                            </span>
+
+                            <span class="md-subhead">
+                                <span>current player:</span>
+                                <span>{{game.turn}}</span>
+                            </span>
+
+                            <span class="md-subhead" ng-show="game.finished">
+                                <span>{{game.finished === true ? 'Winner:' : ''}}</span>
+                                <span>{{game.finished === true ? game.turn : ''}}</span>
+                            </span>
+                        </md-card-title-text>
+                    </md-card-title>
+
+                    <md-card-actions layout="row" layout-align="end center"
+                                     ng-click="vm.enableAutoPilot(game)">
+                        <md-button ng-disabled="game.autopilot">enable auto pilot</md-button>
+                    </md-card-actions>
+                </md-card>
+            </ng-repeat>
         </md-content>
     </md-sidenav>
 
     <md-content flex layout-padding>
 
-        <div layout="column" layout-align="top center">
+        <md-button class="menu-fab" aria-label="menu-fab" ng-click="vm.toggleMenu()">
+            <md-icon md-svg-src="imgs/ic_menu_black_24px.svg"></md-icon>
+        </md-button>
 
-            <md-button class="menu-fab" aria-label="menu-fab" ng-click="vm.openMenu()">
-                <md-icon md-svg-src="imgs/ic_menu_black_24px.svg"></md-icon>
-            </md-button>
+        <div layout="row" layout-align="center" class="board-orientation board-space" ng-show="vm.currentGame">
+
+            <md-content layout-padding>
+
+                <md-card md-theme="{{ showDarkTheme ? 'dark-purple' : 'default' }}" md-theme-watch>
+
+                    <ng-repeat ng-repeat="board in vm.currentBoard track by $index">
+
+                        <div layout="row" layout-align="center">
+
+                            <ng-repeat ng-repeat="column in board track by $index">
+
+                                <div class="box-board box-me" ng-show="column === '.'"></div>
+                                <div class="box-board box-ship" ng-show="column === '*'"></div>
+                                <div class="box-board box-ship-destroy" ng-show="column === 'X'"></div>
+                                <div class="box-board box-missed" ng-show="column === '-'"></div>
+                            </ng-repeat>
+                        </div>
+                    </ng-repeat>
+                </md-card>
+            </md-content>
+
+            <md-content layout-padding>
+
+                <md-card md-theme="{{ showDarkTheme ? 'dark-purple' : 'default' }}" md-theme-watch>
+
+                    <ng-repeat ng-repeat="board in vm.currentBoardShoot track by $index">
+
+                        <div layout="row" layout-align="center">
+
+                            <ng-repeat ng-repeat="column in board track by $index"
+                                       ng-click="vm.setShot($index, $parent.$index)"
+                                       ng-class="{'box-selected': vm.isShotSelected($index, $parent.$index)}">
+                                <div class="box-board box-me" ng-show="column === '.'"></div>
+                                <div class="box-board box-missed" ng-show="column === '-'"></div>
+                                <div class="box-board box-ship-destroy" ng-show="column === 'X'"></div>
+                            </ng-repeat>
+                        </div>
+                    </ng-repeat>
+                </md-card>
+            </md-content>
         </div>
 
-        <md-button class="md-fab challenge-fab" aria-label="challenge-fab" ng-click="vm.challengeDialog($event)">
+        <md-button class="md-fab md-primary shots-fab"
+                   ng-show="vm.currentGame">{{vm.currentGame.shots}}
+        </md-button>
+
+        <md-button name="btn-status" class="md-fab md-primary status-fab" aria-label="btn-status"
+                   ng-class="{'status-fab-wait': !vm.currentPlayer, 'status-fab-go': vm.currentPlayer}"
+                   ng-show="vm.currentGame">
+            <md-icon md-svg-src="imgs/ic_pan_tool_white_24px.svg" ng-show="!vm.currentPlayer"></md-icon>
+            <md-icon md-svg-src="imgs/ic_perm_identity_white_24px.svg" ng-show="vm.currentPlayer"></md-icon>
+        </md-button>
+
+        <md-button name="btn-send" class="md-fab md-primary send-fab status-fab-shot" aria-label="btn-send"
+                   ng-show="vm.currentSalvo.length > 0 && vm.currentGame && vm.shootingPlayer"
+                   ng-click="vm.sendSalvo()">
+            <md-icon md-svg-src="imgs/ic_send_white_24px.svg"></md-icon>
+        </md-button>
+
+        <md-button name="btn-challenge" class="md-fab challenge-fab" aria-label="btn-challenge"
+                   ng-click="vm.challengeDialog($event)"
+                   ng-disabled="vm.searchingPlayer">
             <md-icon md-svg-src="imgs/ic_add_white_24px.svg"></md-icon>
         </md-button>
     </md-content>

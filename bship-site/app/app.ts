@@ -9,9 +9,8 @@ module App {
         'ngMessages'
     ]);
 
-    app.run(($rootScope: ng.IRootScopeService,
-             config: Config,
-             loggerFactory: ILoggerFactory,
+    app.run((config: Config,
+             $rootScope: ng.IRootScopeService,
              $state: angular.ui.IStateService) => {
 
     });

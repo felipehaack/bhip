@@ -119,7 +119,7 @@ gulp.task("clean", function (cb) {
 gulp.task("serve", ["build:prod"], function (done) {
     browserSync({
         open: false,
-        port: 9010,
+        port: 8020,
         server: {
             baseDir: [paths.dist],
             middleware: function (req, res, next) {

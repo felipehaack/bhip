@@ -1,40 +1,43 @@
 module App {
 
-    interface IGameStatus {
+    'use strict'
+
+    export interface IGameStatus {
         opponent_id: string,
         full_name: string,
         game_id: string,
         finished: boolean,
         autopilot: boolean,
         shots: number
+        turn: string
     }
 
-    interface IGameProgress {
+    export interface IGameProgress {
         self: IPlayerProgress,
         opponent: IPlayerProgress,
         game: any
     }
 
-    interface IPlayerProgress {
+    export interface IPlayerProgress {
         user_id: string,
         board: string[]
     }
 
-    interface IChallenge {
+    export interface IChallenge {
         rules: string,
         spaceship_protocol: IProtocol
     }
 
-    interface IProtocol {
+    export interface IProtocol {
         hostname: string,
         port: number
     }
 
-    interface ISalvo {
+    export interface ISalvo {
         salvo: string[]
     }
 
-    interface ISalvoResult {
+    export interface ISalvoResult {
         salvo: any[]
         game: any
     }
@@ -48,7 +51,7 @@ module App {
 
         }
 
-        getAllGames(): ng.IPromise<IGameStatus> {
+        getAllGames(): ng.IPromise<IGameStatus[]> {
 
             return this.$http.get(App.URL + App.USER_API + `/games`).then(toData)
         }
@@ -60,10 +63,10 @@ module App {
 
         enableAutoPilot(gameId: string): ng.IPromise<any> {
 
-            return this.$http.post(App.URL + App.USER_API + `/game/${gameId}/auto`, null).then(toData)
+            return this.$http.post(App.URL + App.USER_API + `/game/${gameId}/auto`, {}).then(toData)
         }
 
-        challenge(input: IChallenge): ng.IPromise<IGameProgress> {
+        challenge(input: IChallenge): ng.IPromise<IGameStatus> {
 
             return this.$http.post(App.URL + App.USER_API + `/game/new`, input).then(toData)
         }
@@ -74,5 +77,5 @@ module App {
         }
     }
 
-    angular.module(App.Module).service(UserApiService.id, UserApiService);
+    angular.module(Module).service(UserApiService.id, UserApiService);
 }

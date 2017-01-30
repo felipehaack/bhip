@@ -18,7 +18,7 @@ class GameApi @Inject()(gameService: GameService) extends Api with Protocoler {
 
         gameService.registerChallenge(result, request.body.spaceship_protocol)
 
-        SeeOther(stringAsChallengeSeeOther(result.game_id))
+        Ok.asJson(result)
       case None => BadRequest
     }
   }
