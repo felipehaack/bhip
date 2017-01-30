@@ -9,7 +9,7 @@
 
 1. Open the terminal
 2. Clone the project: ```git clone https://felipehaack@bitbucket.org/felipehaack/bship.git```
-3. And go to battleship api folder ```cd bship-api```
+3. And go to bship api folder ```cd bship/bship-api```
 4. Before, set the appropriate user id, full name and ip by editing the file ```nano api/conf/application.conf```
 5. Run the following command: ```docker-compose up api```
 6. Once the docker application has been launched successfully execute: ```cd ../bship-web```
