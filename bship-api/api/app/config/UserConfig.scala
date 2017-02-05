@@ -8,8 +8,8 @@ class UserConfig @Inject()(
                             implicit configuration: Configuration
                           ) extends Configurable("user") {
 
-  lazy val userId = getAsString("user_id")
-  lazy val fullName = getAsString("full_name")
-  lazy val ip = getAsString("ip")
-  lazy val port = getAsString("port").toInt
+  lazy val id: String = getAsString("id")
+  lazy val fullName: String = getAsString("fullName")
+  lazy val host: String = getAsString("host")
+  lazy val port: Int = getAsString("port").toInt
 }

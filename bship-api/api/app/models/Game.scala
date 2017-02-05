@@ -7,54 +7,54 @@ case class Game(
                  id: String,
                  var turn: String,
                  var finish: Boolean,
-                 var autopilot: Boolean,
+                 var autoPilot: Boolean,
                  var shots: Int,
-                 rules: String,
+                 rule: String,
                  me: Player,
                  opponent: Player,
-                 protocol: Protocol
+                 connection: Connection
                )
 
 object Game {
 
   case class Create(
-                     user_id: String,
-                     full_name: String,
-                     rules: String,
-                     spaceship_protocol: Protocol
+                     userId: String,
+                     fullName: String,
+                     rule: String,
+                     connection: Connection
                    )
 
   case class Result(
-                     user_id: String,
-                     full_name: String,
-                     game_id: String,
-                     starting: String,
-                     rules: String
+                     userId: String,
+                     fullName: String,
+                     gameId: String,
+                     turn: String,
+                     rule: String
                    )
 
   case class Status(
-                     opponent_id: String,
-                     full_name: String,
-                     game_id: String,
+                     opponentId: String,
+                     fullName: String,
+                     gameId: String,
                      finished: Boolean,
-                     autopilot: Boolean,
+                     autoPilot: Boolean,
                      shots: Int,
                      turn: String
                    )
 
   case class Challenge(
-                        spaceship_protocol: Protocol,
-                        rules: String
+                        connection: Connection,
+                        rule: String
                       )
 
   case class Progress(
-                       self: ProgressPlayer,
+                       me: ProgressPlayer,
                        opponent: ProgressPlayer,
-                       game: (String, String)
+                       turn: (String, String)
                      )
 
   case class ProgressPlayer(
-                             user_id: String,
+                             userId: String,
                              board: Array[String]
                            )
 

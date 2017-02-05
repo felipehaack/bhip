@@ -5,12 +5,12 @@ object Board {
   val SIZE = 16
 
   val WON = "won"
-  val PLAYER_TURN = "player_turn"
+  val TURN = "turn"
 
   val EMPTY = '.'
   val KILLED = 'X'
   val MISSED = '-'
-  val UNCHANGED = '*'
+  val SHIP = '*'
 
   val KILL = "kill"
   val MISS = "miss"

@@ -12,10 +12,12 @@ import utils.Logging
 import scala.concurrent.Future
 
 trait Api extends Controller with I18nSupport with JsonApi with ImplicityHelper with Logging {
+
   @Inject var messagesApi: MessagesApi = _
 }
 
 trait ImplicityHelper {
+
   protected implicit val execution = defaultContext
 }
 
@@ -41,6 +43,7 @@ trait JsonApi extends ImplicityHelper {
   }
 
   object json {
+
     private val inputInvalidCode = "error.input.invalid"
 
     def apply[T](implicit reader: Reads[T]): BodyParser[T] = {
