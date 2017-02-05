@@ -14,14 +14,14 @@ import scala.concurrent.duration._
 import play.api.libs.ws._
 import java.security.MessageDigest
 
-import utils.{Protocoler, Rules}
+import utils.{Linker, Rules}
 
 @Singleton
 class GameService @Inject()(
                              ws: WSClient,
                              userConfig: UserConfig,
                              implicit val executionContext: ExecutionContext
-                           ) extends Protocoler with Rules {
+                           ) extends Linker with Rules {
 
   var matches = List[Game]()
 
@@ -131,18 +131,6 @@ class GameService @Inject()(
     MessageDigest.getInstance("MD5").digest(str.getBytes()).foldLeft("")(_ + "%02x".format(_))
   }
 
-  private def showBoardOnConsole(board: Array[Array[Char]]) = {
-
-    board.foreach { row =>
-
-      row.foreach(column => print(s"${column} "))
-
-      println
-    }
-
-    println
-  }
-
   def findGameByGameId(gameId: String): Option[Game] = {
 
     val found = for {
@@ -161,20 +149,21 @@ class GameService @Inject()(
 
     val seq = for {
       i <- matches.indices
-      id = matches(i).id
-      user = matches(i).opponent.userId
-      name = matches(i).opponent.fullName
-      finished = matches(i).finish
-      autopilot = matches(i).autopilot
-      shots = matches(i).shots
-      turn = matches(i).turn
+      game = matches(i)
+      id = game.id
+      user = game.opponent.userId
+      name = game.opponent.fullName
+      finished = game.finish
+      autoPilot = game.autoPilot
+      shots = game.shots
+      turn = game.turn
     } yield {
       Game.Status(
-        opponent_id = user,
-        full_name = name,
-        game_id = id,
+        opponentId = user,
+        fullName = name,
+        gameId = id,
         finished = finished,
-        autopilot = autopilot,
+        autoPilot = autoPilot,
         shots = shots,
         turn = turn
       )
@@ -189,7 +178,7 @@ class GameService @Inject()(
 
       case Some(game) =>
 
-        game.autopilot = true
+        game.autoPilot = true
 
         true
 
@@ -223,11 +212,11 @@ class GameService @Inject()(
 
         val progressFire = Game.ProgressPlayer(game.opponent.userId, boardFireNew)
 
-        val progress = Game.Progress(progressMe, progressFire, (Board.PLAYER_TURN, game.turn))
+        val progress = Game.Progress(progressMe, progressFire, (Board.TURN, game.turn))
 
         game.finish match {
 
-          case true => Some(progress.copy(game = (Board.WON, game.turn)))
+          case true => Some(progress.copy(turn = (Board.WON, game.turn)))
           case false => Some(progress)
         }
 
@@ -237,13 +226,13 @@ class GameService @Inject()(
 
   def challenge(challenge: Game.Challenge): Future[Option[Game.Result]] = {
 
-    findShotsByRules(challenge.rules) match {
+    findShotsByRules(challenge.rule) match {
 
       case Some(_) =>
 
-        val url = stringAsChallenge(challenge.spaceship_protocol.hostname)(challenge.spaceship_protocol.port)
+        val url = stringAsChallenge(challenge.connection.host)(challenge.connection.port)
 
-        val create = Game.Create(userConfig.userId, userConfig.fullName, challenge.rules, Protocol(userConfig.ip, userConfig.port))
+        val create = Game.Create(userConfig.id, userConfig.fullName, challenge.rule, Connection(userConfig.host, userConfig.port))
 
         val json = Json.toJson(create)
 
@@ -265,14 +254,10 @@ class GameService @Inject()(
     val shipsMe = generateShips()
     val boardMe = createBoard(shipsMe)
 
-    val me = Player(userConfig.userId, userConfig.fullName, shipsMe, boardMe, List())
-
-    //showBoardOnConsole(boardMe)
+    val me = Player(userConfig.id, userConfig.fullName, shipsMe, boardMe, List())
 
     //Create Ship: rotate and position and generate the board with each ship
-    val opponent = Player(game.user_id, game.full_name, null, null, null)
-
-    //showBoardOnConsole(boardOpponent)
+    val opponent = Player(game.userId, game.fullName, null, null, null)
 
     //Add each player and the game configuration to the Game List that contain all current games
     val turn = Random.nextInt(20) match {
@@ -280,36 +265,32 @@ class GameService @Inject()(
       case r if r % 2 == 1 => opponent.userId
     }
 
-    val shots = findShotsByRules(game.rules)
+    val shots = findShotsByRules(game.rule)
 
-    val id = getGameIdHashed(s"${game.spaceship_protocol.hostname}${System.currentTimeMillis()}")
+    val id = getGameIdHashed(s"${game.connection.host}${System.currentTimeMillis()}")
 
-    val newGame = Game(id, turn, false, false, shots.get, game.rules, me, opponent, game.spaceship_protocol)
+    val newGame = Game(id, turn, false, false, shots.get, game.rule, me, opponent, game.connection)
 
     matches ::= newGame
 
     //Return the correct data to controller
-    Game.Result(me.userId, me.fullName, newGame.id, newGame.turn, game.rules)
+    Game.Result(me.userId, me.fullName, newGame.id, newGame.turn, game.rule)
   }
 
-  def registerChallenge(game: Game.Result, protocol: Protocol) = {
+  def registerChallenge(game: Game.Result, connection: Connection) = {
 
     //Create Ship: rotate and position and generate the board with each ship
     val shipsMe = generateShips()
     val boardMe = createBoard(shipsMe)
 
-    val me = Player(userConfig.userId, userConfig.fullName, shipsMe, boardMe, List())
-
-    //showBoardOnConsole(boardMe)
+    val me = Player(userConfig.id, userConfig.fullName, shipsMe, boardMe, List())
 
     //Create Ship: rotate and position and generate the board with each ship
-    val opponent = Player(game.user_id, game.full_name, null, null, null)
+    val opponent = Player(game.userId, game.fullName, null, null, null)
 
-    //showBoardOnConsole(boardOpponent)
+    val shots = findShotsByRules(game.rule)
 
-    val shots = findShotsByRules(game.rules)
-
-    val newGame = Game(game.game_id, game.starting, false, false, shots.get, game.rules, me, opponent, protocol)
+    val newGame = Game(game.gameId, game.turn, false, false, shots.get, game.rule, me, opponent, connection)
 
     matches ::= newGame
   }

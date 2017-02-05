@@ -1,18 +1,18 @@
 # Routes
 # ~~~~
 
-#For Protocol API
+#For Link API
 # ~~~~
-POST        /xl-spaceship/protocol/game/new                           api.GameApi.register
+POST        /bship/link/game/new                                 api.GameApi.register
 
-PUT         /xl-spaceship/protocol/game/$gameId<[0-9a-zA-Z]+>         api.MatchApi.fired(gameId: String)
+PUT         /bship/link/game/$gameId<[0-9a-zA-Z]+>               api.MatchApi.fired(gameId: String)
 
-#For User API
+#For Player API
 # ~~~~
-POST        /xl-spaceship/user/game/new                               api.GameApi.challenge
-POST        /xl-spaceship/user/game/$gameId<[0-9a-zA-Z]+>/auto        api.GameApi.enableAutoPilot(gameId: String)
+POST        /bship/player/game/new                               api.GameApi.challenge
+POST        /bship/player/game/$gameId<[0-9a-zA-Z]+>/auto        api.GameApi.enableAutoPilot(gameId: String)
 
-PUT         /xl-spaceship/user/game/$gameId<[0-9a-zA-Z]+>/fire        api.MatchApi.fire(gameId: String)
+PUT         /bship/player/game/$gameId<[0-9a-zA-Z]+>/fire        api.MatchApi.fire(gameId: String)
 
-GET         /xl-spaceship/user/games                                  api.GameApi.status
-GET         /xl-spaceship/user/game/$gameId<[0-9a-zA-Z]+>             api.GameApi.progress(gameId: String)
+GET         /bship/player/games                                  api.GameApi.status
+GET         /bship/player/game/$gameId<[0-9a-zA-Z]+>             api.GameApi.progress(gameId: String)

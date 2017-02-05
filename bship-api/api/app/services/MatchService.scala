@@ -7,7 +7,7 @@ import play.api.libs.json.Json
 import play.api.libs.ws._
 
 import scala.concurrent.duration._
-import utils.{Protocoler, Rules}
+import utils.{Linker, Rules}
 
 import scala.concurrent.{Await, ExecutionContext, Future, Promise}
 import scala.util.{Random, Try}
@@ -17,7 +17,7 @@ class MatchService @Inject()(
                               ws: WSClient,
                               gameService: GameService,
                               implicit val context: ExecutionContext
-                            ) extends Protocoler with Rules {
+                            ) extends Linker with Rules {
 
   private val HEXADECIMAL = "0123456789ABCDEF"
 
@@ -61,41 +61,42 @@ class MatchService @Inject()(
     }
   }
 
-  private def isValidSalvos(salvos: Array[String]): Boolean = {
+  private def isValidShots(shots: Array[String]): Boolean = {
 
     val result = for {
-      i <- salvos.indices
-      if salvos(i).length == 3 && isValidChar(salvos(i)(0)) && isValidChar(salvos(i)(2)) && salvos(i)(1) == 'x'
+      i <- shots.indices
+      if shots(i).length == 3 && isValidChar(shots(i)(0)) && isValidChar(shots(i)(2)) && shots(i)(1) == 'x'
     } yield i
 
     result.length match {
-      case size if salvos.length == size => true
+      case size if shots.length == size => true
       case _ => false
     }
   }
 
-  private def shotBoard(salvo: Array[String], player: Player): List[(String, String)] = {
+  private def shotBoard(shots: Array[String], player: Player): List[(String, String)] = {
 
     var status = List[(String, String)]()
 
     var i = 0
 
-    while (i < salvo.length) {
+    while (i < shots.length) {
 
-      val x = findPositionFromAscii(salvo(i)(0))
-      val y = findPositionFromAscii(salvo(i)(2))
+      val x = findPositionFromAscii(shots(i)(0))
+      val y = findPositionFromAscii(shots(i)(2))
 
       player.board(y)(x) match {
+
         case c if c == Board.EMPTY =>
           player.board(y)(x) = Board.MISSED
-          status ::=(salvo(i), Board.MISS)
+          status ::= (shots(i), Board.MISS)
 
         case c if c == Board.MISSED || c == Board.KILLED =>
-          status ::=(salvo(i), Board.MISS)
+          status ::= (shots(i), Board.MISS)
 
-        case Board.UNCHANGED =>
+        case Board.SHIP =>
           player.board(y)(x) = Board.KILLED
-          status ::=(salvo(i), Board.HIT)
+          status ::= (shots(i), Board.HIT)
       }
 
       i += 1
@@ -128,10 +129,11 @@ class MatchService @Inject()(
             }
 
             ship.positions.isEmpty match {
-              case true => localStatus ::=(shot, Board.KILL)
-              case false => localStatus ::=(shot, Board.HIT)
+              case true => localStatus ::= (shot, Board.KILL)
+              case false => localStatus ::= (shot, Board.HIT)
             }
           }
+
         case _ => localStatus ::= status(i)
       }
 
@@ -141,9 +143,9 @@ class MatchService @Inject()(
     localStatus
   }
 
-  private def verifyReplicateShots(game: Game, salvo: List[(String, String)]): List[(Int, Int, Char)] = {
+  private def verifyReplicateShots(game: Game, shots: List[(String, String)]): List[(Int, Int, Char)] = {
 
-    salvo.map { shot =>
+    shots.map { shot =>
 
       shot._2 match {
         case r if r == Board.KILL || r == Board.HIT => (shot._1, shot._1, Board.KILLED)
@@ -181,7 +183,7 @@ class MatchService @Inject()(
 
   private def autoPilotGenerator(game: Game) = {
 
-    game.autopilot match {
+    game.autoPilot match {
 
       case true =>
 
@@ -189,7 +191,7 @@ class MatchService @Inject()(
 
           case game.me.userId =>
 
-            val salvos = for {
+            val shots = for {
               i <- 0 until game.shots
               x = HEXADECIMAL(Random.nextInt(HEXADECIMAL.length))
               y = HEXADECIMAL(Random.nextInt(HEXADECIMAL.length))
@@ -200,7 +202,7 @@ class MatchService @Inject()(
 
               delay(3.seconds.fromNow)
 
-              fire(game.id, Fire.Create(salvos.toArray)) map {
+              fire(game.id, Fire.Create(shots.toArray)) map {
 
                 case Some(result) => fireResult(game.id, result)
                 case _ =>
@@ -214,9 +216,9 @@ class MatchService @Inject()(
     }
   }
 
-  def fire(gameId: String, salvos: Fire.Create): Future[Option[Fire.Result]] = {
+  def fire(gameId: String, shots: Fire.Create): Future[Option[Fire.Result]] = {
 
-    (isValidSalvos(salvos.salvo), verifyPlayerTurn(gameId)) match {
+    (isValidShots(shots.shots), verifyPlayerTurn(gameId)) match {
 
       case (true, true) =>
 
@@ -226,13 +228,13 @@ class MatchService @Inject()(
 
             val totalShips = findTotalShipsAlive(game.me)
 
-            verifyShots(salvos.salvo, game.rules, totalShips, game.shots) match {
+            verifyShots(shots.shots, game.rule, totalShips, game.shots) match {
 
               case true =>
 
-                val json = Json.toJson(salvos)
+                val json = Json.toJson(shots)
 
-                val url = stringAsFire(game.protocol.hostname)(game.protocol.port)(gameId)
+                val url = stringAsFire(game.connection.host)(game.connection.port)(gameId)
 
                 ws.url(url).withRequestTimeout(8000.millis).put(json).map { response =>
 
@@ -258,20 +260,20 @@ class MatchService @Inject()(
 
       case Some(game) =>
 
-        game.turn = result.game._2
+        game.turn = result.status._2
 
-        result.game._1 match {
+        result.status._1 match {
 
           case c if c == Board.WON => game.finish = true
           case _ =>
         }
 
-        isDesperation(game.rules) match {
-          case true => game.shots += result.salvo.count(_._2 == Board.KILL)
+        isIncrementer(game.rule) match {
+          case true => game.shots += result.shots.count(_._2 == Board.KILL)
           case _ =>
         }
 
-        val localSalvo = verifyReplicateShots(game, result.salvo.toList)
+        val localSalvo = verifyReplicateShots(game, result.shots.toList)
 
         game.me.shots ++= localSalvo
 
@@ -291,37 +293,35 @@ class MatchService @Inject()(
 
           case false =>
 
-            val salvo = fire.salvo
+            val shots = fire.shots
 
             val totalShips = findTotalShipsAlive(game.me)
 
-            val statusBoard = shotBoard(salvo, game.me)
+            val statusBoard = shotBoard(shots, game.me)
             val statusShips = shotShips(statusBoard, game.me)
 
             game.turn = game.me.userId
-
-            //showOnConsolePlayersBoard(game)
 
             val turn = findTotalShipsAlive(game.me) match {
 
               case total if total > 0 =>
 
-                isDesperation(game.rules) match {
+                isIncrementer(game.rule) match {
 
                   case v if v && totalShips != total =>
 
                     game.turn = game.opponent.userId
 
-                    (Board.PLAYER_TURN, game.turn)
+                    (Board.TURN, game.turn)
 
                   case _ =>
 
-                    isSuperChargerOrStandard(game.rules) match {
+                    isDecrementer(game.rule) match {
                       case true => game.shots = total
                       case _ =>
                     }
 
-                    (Board.PLAYER_TURN, game.turn)
+                    (Board.TURN, game.turn)
                 }
 
               case _ =>

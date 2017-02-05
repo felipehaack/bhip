@@ -4,22 +4,20 @@ import models.Ship
 
 trait Rules {
 
-  val regexShot = "[0-9]+".r
+  private val regexShot = "[0-9]+".r
 
   object Rule extends Enumeration {
 
     val SHOT = Value("shot")
-    val STANDARD = Value("standard")
-    val DESPERATION = Value("desperation")
-    val SUPER_CHARGER = Value("super-charge")
+    val INCREMENTER = Value("incrementer")
+    val DECREMENTER = Value("decrementer")
   }
 
   def findShotsByRules(rules: String): Option[Int] = {
 
     rules match {
-      case r if r.indexOf(Rule.STANDARD.toString) > -1 => Some(Ship.All.length)
-      case r if r.indexOf(Rule.SUPER_CHARGER.toString) > -1 => Some(Ship.All.length)
-      case r if r.indexOf(Rule.DESPERATION.toString) > -1 => Some(1)
+      case r if r.indexOf(Rule.DECREMENTER.toString) > -1 => Some(Ship.All.length)
+      case r if r.indexOf(Rule.INCREMENTER.toString) > -1 => Some(1)
       case r if r.indexOf(Rule.SHOT.toString) > -1 =>
 
         val shots = r.split("-")
@@ -41,27 +39,25 @@ trait Rules {
   def verifyShots(shots: Array[String], rules: String, shipsAlive: Int, maxShots: Int): Boolean = {
 
     rules match {
-      case r if r.indexOf(Rule.STANDARD.toString) > -1 => shots.length <= shipsAlive
-      case r if r.indexOf(Rule.SUPER_CHARGER.toString) > -1 => shots.length <= shipsAlive
+      case r if r.indexOf(Rule.DECREMENTER.toString) > -1 => shots.length <= shipsAlive
       case r if r.indexOf(Rule.SHOT.toString) > -1 => shots.length <= maxShots
-      case r if r.indexOf(Rule.DESPERATION.toString) > -1 => shots.length <= maxShots
+      case r if r.indexOf(Rule.INCREMENTER.toString) > -1 => shots.length <= maxShots
     }
   }
 
-  def isDesperation(rules: String): Boolean = {
+  def isIncrementer(rules: String): Boolean = {
 
-    rules match {
-      case r if r.indexOf(Rule.DESPERATION.toString) > -1 => true
-      case _ => false
+    rules.indexOf(Rule.INCREMENTER.toString) match {
+      case -1 => false
+      case _ => true
     }
   }
 
-  def isSuperChargerOrStandard(rules: String): Boolean = {
+  def isDecrementer(rules: String): Boolean = {
 
-    rules match {
-      case r if r.indexOf(Rule.SUPER_CHARGER.toString) > -1 => true
-      case r if r.indexOf(Rule.STANDARD.toString) > -1 => true
-      case _ => false
+    rules.indexOf(Rule.DECREMENTER.toString) match {
+      case -1 => false
+      case _ => true
     }
   }
 }

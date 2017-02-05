@@ -5,10 +5,10 @@ import javax.inject.{Inject, Singleton}
 import models.Game
 import play.api.mvc.Action
 import services.GameService
-import utils.Protocoler
+import utils.Linker
 
 @Singleton
-class GameApi @Inject()(gameService: GameService) extends Api with Protocoler {
+class GameApi @Inject()(gameService: GameService) extends Api with Linker {
 
   def challenge = Action.async(json[Game.Challenge]) { implicit request =>
 
@@ -16,7 +16,7 @@ class GameApi @Inject()(gameService: GameService) extends Api with Protocoler {
 
       case Some(result) =>
 
-        gameService.registerChallenge(result, request.body.spaceship_protocol)
+        gameService.registerChallenge(result, request.body.connection)
 
         Ok.asJson(result)
       case None => BadRequest
