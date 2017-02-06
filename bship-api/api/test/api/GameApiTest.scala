@@ -4,32 +4,33 @@ import common.ApiSpec
 import play.api.test._
 import play.api.test.Helpers._
 import play.api.libs.json.Json
-import models.{Game, Protocol}
-import org.scalatestplus.play.{OneAppPerTest, PlaySpec}
+import models.{Connection, Game}
+import org.scalatestplus.play.guice.GuiceOneAppPerTest
+import org.scalatestplus.play.PlaySpec
 
-class GameApiTest extends PlaySpec with ApiSpec with OneAppPerTest {
+class GameApiTest extends PlaySpec with ApiSpec with GuiceOneAppPerTest {
 
-  val protocol = Protocol("192.168.1.2", 9000)
-  val game = Game.Create("xebialabs", "xebialabs full", "standard", protocol)
-  val gameResult = Game.Result("someone", "someone full", "somehash", "someone", "standard")
+  val connection = Connection("192.168.1.2", 9000)
+  val game = Game.Create("nickname", "fullName", "incrementer", connection)
+  val gameResult = Game.Result("someone", "someone full", "someHash", "someone", "incrementer")
 
-  "try to create a new game by Protocol API call" should {
+  "try to create a new game by Link API call" should {
 
     "return 200 after create a new game" in {
 
-      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(game))
+      val fakeRequest = FakeRequest(POST, "/bship/link/game/new").withJsonBody(Json.toJson(game))
 
       val result = route(app, fakeRequest).get
 
       status(result) mustBe 200
 
-      result.contentAs[Game.Result].rules mustBe "standard"
+      result.contentAs[Game.Result].rule mustBe "incrementer"
     }
 
     "return 400 when some fields are has invalid data" in {
 
-      val localGame = game.copy(rules = "noexist")
-      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(localGame))
+      val localGame = game.copy(rule = "noExist")
+      val fakeRequest = FakeRequest(POST, "/bship/link/game/new").withJsonBody(Json.toJson(localGame))
 
       val result = route(app, fakeRequest).get
 
@@ -41,16 +42,16 @@ class GameApiTest extends PlaySpec with ApiSpec with OneAppPerTest {
       val json =
         """
           {
-          | "user_id": "xebialabs",
-          |	"rules": "standard",
-          |	"spaceship_protocol": {
-          |		"hostname": "127.0.0.1",
+          | "userId": "nick name",
+          |	"rule": "incrementer",
+          |	"connection": {
+          |		"host": "127.0.0.1",
           |		"port": 8000
           |	}
           }
         """.stripMargin
 
-      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(json))
+      val fakeRequest = FakeRequest(POST, "/bship/link/game/new").withJsonBody(Json.toJson(json))
 
       val result = route(app, fakeRequest).get
 
@@ -62,7 +63,7 @@ class GameApiTest extends PlaySpec with ApiSpec with OneAppPerTest {
 
     "return 200 when try to get an existing game status from game id" in {
 
-      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(game))
+      val fakeRequest = FakeRequest(POST, "/bship/link/game/new").withJsonBody(Json.toJson(game))
 
       val result = route(app, fakeRequest).get
 
@@ -70,9 +71,9 @@ class GameApiTest extends PlaySpec with ApiSpec with OneAppPerTest {
 
       val gameResult = result.contentAs[Game.Result]
 
-      gameResult.rules mustBe game.rules
+      gameResult.rule mustBe game.rule
 
-      val fakeRequestAux = FakeRequest(GET, s"/xl-spaceship/user/game/${gameResult.game_id}")
+      val fakeRequestAux = FakeRequest(GET, s"/bship/player/game/${gameResult.gameId}")
 
       val resultAux = route(app, fakeRequestAux).get
 
@@ -80,12 +81,12 @@ class GameApiTest extends PlaySpec with ApiSpec with OneAppPerTest {
 
       val gameProgress = resultAux.contentAs[Game.Progress]
 
-      gameProgress.opponent.user_id mustBe game.user_id
+      gameProgress.opponent.userId mustBe game.userId
     }
 
     "return 404 when try to get the game status from game id that doesn't exists" in {
 
-      val fakeRequest = FakeRequest(GET, s"/xl-spaceship/user/game/${gameResult.game_id}")
+      val fakeRequest = FakeRequest(GET, s"/bship/player/game/${gameResult.gameId}")
 
       val result = route(app, fakeRequest).get
 
@@ -97,10 +98,10 @@ class GameApiTest extends PlaySpec with ApiSpec with OneAppPerTest {
 
     "return 200 with at least 2 game in progress" in {
 
-      await(route(app, FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(game))).get)
-      await(route(app, FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(game))).get)
+      await(route(app, FakeRequest(POST, "/bship/link/game/new").withJsonBody(Json.toJson(game))).get)
+      await(route(app, FakeRequest(POST, "/bship/link/game/new").withJsonBody(Json.toJson(game))).get)
 
-      val fakeRequest = FakeRequest(GET, "/xl-spaceship/user/games")
+      val fakeRequest = FakeRequest(GET, "/bship/player/games")
 
       val result = route(app, fakeRequest).get
 
@@ -111,7 +112,7 @@ class GameApiTest extends PlaySpec with ApiSpec with OneAppPerTest {
 
     "return 200 with no games in progress" in {
 
-      val fakeRequest = FakeRequest(GET, "/xl-spaceship/user/games")
+      val fakeRequest = FakeRequest(GET, "/bship/player/games")
 
       val result = route(app, fakeRequest).get
 
@@ -125,7 +126,7 @@ class GameApiTest extends PlaySpec with ApiSpec with OneAppPerTest {
 
     "return 200 when enable auto pilot with a existing game id" in {
 
-      val fakeRequest = FakeRequest(POST, "/xl-spaceship/protocol/game/new").withJsonBody(Json.toJson(game))
+      val fakeRequest = FakeRequest(POST, "/bship/link/game/new").withJsonBody(Json.toJson(game))
 
       val result = route(app, fakeRequest).get
 
@@ -133,9 +134,9 @@ class GameApiTest extends PlaySpec with ApiSpec with OneAppPerTest {
 
       val gameResult = result.contentAs[Game.Result]
 
-      gameResult.rules mustBe game.rules
+      gameResult.rule mustBe game.rule
 
-      val fakeRequestPilot = FakeRequest(POST, s"/xl-spaceship/user/game/${gameResult.game_id}/auto")
+      val fakeRequestPilot = FakeRequest(POST, s"/bship/player/game/${gameResult.gameId}/auto")
 
       val resultPilot = route(app, fakeRequestPilot).get
 
@@ -144,7 +145,7 @@ class GameApiTest extends PlaySpec with ApiSpec with OneAppPerTest {
 
     "return 404 when try to enable with not found game id" in {
 
-      val fakeRequestPilot = FakeRequest(POST, s"/xl-spaceship/user/game/${gameResult.game_id}/auto")
+      val fakeRequestPilot = FakeRequest(POST, s"/bship/player/game/${gameResult.gameId}/auto")
 
       val resultPilot = route(app, fakeRequestPilot).get
 
