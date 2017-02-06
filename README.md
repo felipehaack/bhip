@@ -12,7 +12,7 @@
 1. Open the terminal
 2. Clone the project: ```git clone https://felipehaack@bitbucket.org/felipehaack/bship.git```
 3. And go to the application folder ```cd bship```
-4. Before, set the appropriate user id, full name, ip and port on api environment by editing the file ```nano docker-compose.yml```
+4. Before, set the appropriate nickname, full name, host and port on api environment by editing the file ```nano docker-compose.yml```
 5. Run the following command: ```docker-compose up``` (**The first launch of the API takes considerably more time than the web interface** due to the fact that it has to download dependencies, even interface was finished the API will continue downloading)
 6. Once the docker application has been launched successfully, open your browser and go to: [Web App](http://localhost:8020)
 
