@@ -6,7 +6,7 @@ module App {
 
         static id: string = "config";
 
-        protected name: string = "battleship";
+        protected name: string = "bship";
         protected version: string = "1.0";
 
         constructor() {

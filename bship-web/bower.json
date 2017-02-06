@@ -1,8 +1,8 @@
 {
-  "name": "yo-typescript",
+  "name": "bship",
   "version": "0.0.0",
   "authors": [
-    "stephen.lautier <stephen.lautier@outlook.com>"
+    "felipehaack <felipe.haackschmitz@gmail.com>"
   ],
   "license": "MIT",
   "ignore": [

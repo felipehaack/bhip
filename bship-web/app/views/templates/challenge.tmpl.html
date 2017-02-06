@@ -16,7 +16,7 @@
 
                     <input name="ipAddress"
                            placeholder="000.000.000.000"
-                           ng-model="vm.challenge.spaceship_protocol.hostname"
+                           ng-model="vm.challenge.connection.host"
                            ng-pattern="/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/"
                            md-maxlength="15"
                            required>
@@ -34,9 +34,9 @@
 
                     <input name="port"
                            placeholder="9000"
-                           ng-model="vm.challenge.spaceship_protocol.port"
-                           ng-pattern="/^[0-9]{4}$/"
-                           md-maxlength="4"
+                           ng-model="vm.challenge.connection.port"
+                           ng-pattern="/^[0-9]{3,5}$/"
+                           md-maxlength="5"
                            required>
 
                     <div ng-messages="form.port.$error" role="alert" multiple>
@@ -51,12 +51,11 @@
                     <label class="capitalize">rules</label>
 
                     <md-select name="rules"
-                               ng-model="vm.challenge.rules"
+                               ng-model="vm.challenge.rule"
                                required>
-                        <md-option value="standard">standard</md-option>
+                        <md-option value="standard">incrementer</md-option>
+                        <md-option value="super-charge">decrementer</md-option>
                         <md-option value="x-shot">x-shot</md-option>
-                        <md-option value="super-charge">super-charge</md-option>
-                        <md-option value="desperation">desperation</md-option>
                     </md-select>
                 </md-input-container>
 

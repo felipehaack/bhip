@@ -9,7 +9,7 @@ module App {
         ok = 'Got it!'
 
         playerNotFoundTitle = 'Player not found :/'
-        playerNotFoundMessage = 'The player was not found, maybe the hostname ins\'t correct?'
+        playerNotFoundMessage = 'The player was not found, maybe the host ins\'t correct?'
 
         gameWasCreatedTitle = 'The match has been created!'
         gameWasCreatedMessage = 'The match was created with success! Good luck!'
@@ -17,13 +17,14 @@ module App {
         autoPilotTitle = 'Auto pilot enabled!'
         autoPilotTitleMe = 'For auto pilot to work properly, make the first move!'
 
+        autoPilotEnabled = 'The auto pilot is already enabled!'
         autoPilotOpponent = 'Now, you can\'t interact anymore with the current game! :('
 
-        fireTitle = 'The salvo => flies => kabum!'
-        fireMessage = 'The salvo reached the enemy with success! Oh yeah!!!'
+        fireTitle = 'The shots => flies => kabum!'
+        fireMessage = 'The shots reached the enemy with success! Oh yeah!!!'
 
-        salvoOverflow = 'No more shots!'
-        salvoRemoved = 'Shot was removed!'
+        shotsOverflow = 'No more shots!'
+        shotsRemoved = 'Shot was removed!'
         
         constructor() {
 
