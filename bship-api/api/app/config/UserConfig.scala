@@ -6,7 +6,7 @@ import utils.Configurable
 
 class UserConfig @Inject()(
                             implicit configuration: Configuration
-                          ) extends Configurable("user") {
+                          ) extends Configurable("userInfo") {
 
   lazy val id: String = getAsString("id")
   lazy val fullName: String = getAsString("fullName")

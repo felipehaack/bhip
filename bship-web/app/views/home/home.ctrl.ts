@@ -55,7 +55,7 @@ module App {
 
                 if (this.currentGame) {
 
-                    this.currentGame = this.allGames.filter(game => game.game_id === this.currentGame.gameId)[0]
+                    this.currentGame = this.allGames.filter(game => game.gameId === this.currentGame.gameId)[0]
                 }
             })
         }
@@ -257,10 +257,10 @@ module App {
 
                 if (result.shots) {
 
-                    challenge.rule = result.shots + result.challenge.rules.replace('x', '')
+                    challenge.rule = result.shots + result.challenge.rule.replace('x', '')
                 } else {
 
-                    challenge.rule = result.challenge.rules
+                    challenge.rule = result.challenge.rule
                 }
 
                 let connection: IConnection = <IConnection>{}
