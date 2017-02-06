@@ -2,7 +2,7 @@ package services
 
 import common.ApiSpec
 import config.UserConfig
-import models.{Game, Player, Protocol, Ship}
+import models.{Game, Player, Connection, Ship}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.ws.WSClient
@@ -13,13 +13,13 @@ class GameServiceTest extends PlaySpec with ApiSpec with MockitoSugar {
 
   val gameServiceMock = mock[GameService]
 
-  val protocol = Protocol("192.168.1.3", 9000)
+  val connection = Connection("192.168.1.3", 9000)
 
   val board = Array(Array('.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'))
 
   val player = Player("", "", Ship.All.toList, board, List())
 
-  val game = Game(gameId, "xebialabs", false, false, 5, "standard", player, player, protocol)
+  val game = Game(gameId, "someone", false, false, 5, "incrementer", player, player, connection)
 
   val wsClientMock = mock[WSClient]
   val userConfigMock = mock[UserConfig]
