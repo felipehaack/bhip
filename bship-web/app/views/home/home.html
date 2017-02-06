@@ -29,8 +29,8 @@
                             </span>
 
                             <span class="md-subhead" ng-show="game.finished">
-                                <span>{{game.finished === true ? 'Winner:' : ''}}</span>
-                                <span>{{game.finished === true ? game.turn : ''}}</span>
+                                <span>{{game.finished ? 'Winner:' : ''}}</span>
+                                <span>{{game.finished ? game.turn : ''}}</span>
                             </span>
                         </md-card-title-text>
                     </md-card-title>
@@ -105,8 +105,8 @@
         </md-button>
 
         <md-button name="btn-send" class="md-fab md-primary send-fab status-fab-shot" aria-label="btn-send"
-                   ng-show="vm.currentSalvo.length > 0 && vm.currentGame && vm.shootingPlayer"
-                   ng-click="vm.sendSalvo()">
+                   ng-show="vm.currentShots.length > 0 && vm.currentGame && vm.shootingPlayer"
+                   ng-click="vm.sendShots()">
             <md-icon md-svg-src="imgs/ic_send_white_24px.svg"></md-icon>
         </md-button>
 

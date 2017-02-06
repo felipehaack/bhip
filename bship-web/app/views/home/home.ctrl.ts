@@ -18,7 +18,7 @@ module App {
         protected currentGameTimer: any
 
         protected currentPlayer: boolean = false
-        protected currentSalvo: string[] = new Array()
+        protected currentShots: string[] = new Array()
 
         protected searchingPlayer: boolean
         protected shootingPlayer: boolean = true
@@ -29,7 +29,7 @@ module App {
                     private $interval,
                     private $mdDialog,
                     private $mdSidenav,
-                    private userApiService: UserApiService,
+                    private playerApiService: PlayerApiService,
                     private translationService: TranslationService) {
 
             this.findNewGames()
@@ -49,13 +49,13 @@ module App {
 
         findNewGames() {
 
-            this.userApiService.getAllGames().then(data => {
+            this.playerApiService.getAllGames().then(data => {
 
                 this.allGames = data
 
                 if (this.currentGame) {
 
-                    this.currentGame = this.allGames.filter(game => game.game_id === this.currentGame.game_id)[0]
+                    this.currentGame = this.allGames.filter(game => game.gameId === this.currentGame.gameId)[0]
                 }
             })
         }
@@ -64,7 +64,7 @@ module App {
 
             if (this.currentGame) {
 
-                this.userApiService.getGameProgress(this.currentGame.game_id)
+                this.playerApiService.getGameProgress(this.currentGame.gameId)
                     .then((data: IGameProgress) => {
                         this.createBoard(data)
                     })
@@ -73,18 +73,18 @@ module App {
 
         createBoard(boardInfo: IGameProgress) {
 
-            let key = Object.keys(boardInfo.game)[0]
-            let userId = boardInfo.game[key]
+            let key = Object.keys(boardInfo.turn)[0]
+            let userId = boardInfo.turn[key]
 
-            this.currentPlayer = userId === boardInfo.self.user_id
-            this.currentBoard = boardInfo.self.board
+            this.currentPlayer = userId === boardInfo.me.userId
+            this.currentBoard = boardInfo.me.board
             this.currentBoardShoot = boardInfo.opponent.board
         }
 
         setCurrentGame(game: IGameStatus) {
 
             this.currentGame = game
-            this.currentSalvo = new Array()
+            this.currentShots = new Array()
 
             this.toggleMenu()
             this.findCurrentGame()
@@ -92,37 +92,37 @@ module App {
 
         setShot(x: number, y: number) {
 
-            if (this.currentGame.turn !== this.currentGame.opponent_id) {
+            if (this.currentGame.turn !== this.currentGame.opponentId) {
 
                 let localShot = `${x},${y}`
 
-                if (this.currentSalvo.length < this.currentGame.shots) {
+                if (this.currentShots.length < this.currentGame.shots) {
 
-                    let exist = this.currentSalvo.filter(shot => shot === localShot).length
+                    let exist = this.currentShots.filter(shot => shot === localShot).length
 
                     if (exist === 0) {
 
-                        this.currentSalvo.push(localShot)
+                        this.currentShots.push(localShot)
 
-                        this.showSimpleToast(this.currentSalvo.length + ' / ' + this.currentGame.shots)
+                        this.showSimpleToast(this.currentShots.length + ' / ' + this.currentGame.shots)
                     } else {
 
-                        this.currentSalvo = this.currentSalvo.filter(shot => shot !== localShot)
+                        this.currentShots = this.currentShots.filter(shot => shot !== localShot)
 
-                        this.showSimpleToast(this.translationService.salvoRemoved)
+                        this.showSimpleToast(this.translationService.shotsRemoved)
                     }
                 } else {
 
-                    let exist = this.currentSalvo.filter(shot => shot === localShot).length
+                    let exist = this.currentShots.filter(shot => shot === localShot).length
 
                     if (exist === 1) {
 
-                        this.currentSalvo = this.currentSalvo.filter(shot => shot !== localShot)
+                        this.currentShots = this.currentShots.filter(shot => shot !== localShot)
 
-                        this.showSimpleToast(this.translationService.salvoRemoved)
+                        this.showSimpleToast(this.translationService.shotsRemoved)
                     } else {
 
-                        this.showSimpleToast(this.translationService.salvoOverflow)
+                        this.showSimpleToast(this.translationService.shotsOverflow)
                     }
 
                 }
@@ -133,14 +133,14 @@ module App {
 
             let localShot = `${x},${y}`
 
-            return this.currentSalvo.filter(shot => shot === localShot).length === 1 ? true : false
+            return this.currentShots.filter(shot => shot === localShot).length === 1
         }
 
-        sendSalvo() {
+        sendShots() {
 
             this.shootingPlayer = false
 
-            let newSalvo = this.currentSalvo.map(shot => {
+            let newShots = this.currentShots.map(shot => {
 
                 let localShot = shot.split(",")
 
@@ -150,17 +150,17 @@ module App {
                 return `${x}x${y}`
             })
 
-            let salvo: ISalvo = {
-                salvo: newSalvo
+            let salvo: IShots = {
+                shots: newShots
             }
 
-            this.userApiService.fire(this.currentGame.game_id, salvo)
+            this.playerApiService.fire(this.currentGame.gameId, salvo)
                 .then(() => {
 
                     this.findNewGames()
                     this.findCurrentGame()
 
-                    this.currentSalvo = new Array()
+                    this.currentShots = new Array()
 
                     this.alertDialog(null,
                         this.translationService.fireTitle,
@@ -171,28 +171,36 @@ module App {
 
         enableAutoPilot(game: IGameStatus) {
 
-            this.setCurrentGame(game)
+            if (!game.autoPilot) {
+                this.setCurrentGame(game)
 
-            this.userApiService.enableAutoPilot(game.game_id).then(data => {
+                this.playerApiService.enableAutoPilot(game.gameId).then(data => {
 
-                this.findNewGames()
+                    this.findNewGames()
 
-                let message = this.currentGame.opponent_id.indexOf(this.currentGame.turn) > -1
-                    ? this.translationService.autoPilotOpponent
-                    : this.translationService.autoPilotTitleMe
+                    let message = this.currentGame.opponentId.indexOf(this.currentGame.turn) > -1
+                        ? this.translationService.autoPilotOpponent
+                        : this.translationService.autoPilotTitleMe
+
+                    this.alertDialog(null,
+                        this.translationService.autoPilotTitle,
+                        message,
+                        this.translationService.ok)
+                })
+            } else {
 
                 this.alertDialog(null,
                     this.translationService.autoPilotTitle,
-                    message,
+                    this.translationService.autoPilotEnabled,
                     this.translationService.ok)
-            })
+            }
         }
 
         challengePlayer(challenge: IChallenge) {
 
             this.searchingPlayer = true
 
-            this.userApiService.challenge(challenge)
+            this.playerApiService.challenge(challenge)
                 .then((data: IGameStatus) => {
 
                     this.alertDialog(null,
@@ -243,24 +251,24 @@ module App {
             }).then(function (result: any) {
 
                 let challenge: IChallenge = <IChallenge>{
-                    rules: '',
-                    spaceship_protocol: {}
+                    rule: '',
+                    connection: {}
                 }
 
                 if (result.shots) {
 
-                    challenge.rules = result.shots + result.challenge.rules.replace('x', '')
+                    challenge.rule = result.shots + result.challenge.rule.replace('x', '')
                 } else {
 
-                    challenge.rules = result.challenge.rules
+                    challenge.rule = result.challenge.rule
                 }
 
-                let protocol: IProtocol = <IProtocol>{}
+                let connection: IConnection = <IConnection>{}
 
-                protocol.port = parseInt(result.challenge.spaceship_protocol.port, 10)
-                protocol.hostname = result.challenge.spaceship_protocol.hostname
+                connection.port = parseInt(result.challenge.connection.port, 10)
+                connection.host = result.challenge.connection.host
 
-                challenge.spaceship_protocol = protocol
+                challenge.connection = connection
 
                 this.challengePlayer(challenge)
             }.bind(this));
